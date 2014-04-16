@@ -1,0 +1,7 @@
+*.o
+*.user
+Makefile
+*~
+*.autosave
+Celedonious
+log.txt
