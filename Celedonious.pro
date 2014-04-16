@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     SceneMain/DeferredContainer.cpp \
 	SceneMain/DeferredLight.cpp \
 	SceneMain/BlurContainer.cpp \
-    SceneMain/SquareObject.cpp
+    SceneMain/SquareObject.cpp \
+    SceneMain/Player.cpp
 
 HEADERS += \
     commons.hpp \
@@ -15,7 +16,8 @@ HEADERS += \
     SceneMain/DeferredContainer.hpp \
 	SceneMain/DeferredLight.hpp \
 	SceneMain/BlurContainer.hpp \
-    SceneMain/SquareObject.hpp
+    SceneMain/SquareObject.hpp \
+    SceneMain/Player.hpp
 
 OTHER_FILES += \
     data/shaders/quad.vert \

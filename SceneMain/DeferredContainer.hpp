@@ -22,7 +22,6 @@ class DeferredContainer : public ContainerObject {
 
 	private:
 		RenderTarget* gBuffer;
-		RenderTarget* sunTarget;
         mutable DrawMode drawMode;
 		mutable Model quad;
 };
