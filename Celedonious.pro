@@ -3,22 +3,18 @@ INCLUDEPATH += .
 #DEFINES += __DLOG
 SOURCES += main.cpp \
     commons.cpp \
-    SceneMain/SceneMain.cpp \
-    SceneMain/Camera.cpp \
+	SceneMain/SceneMain.cpp \
     SceneMain/DeferredContainer.cpp \
 	SceneMain/DeferredLight.cpp \
-    SceneMain/BlurContainer.cpp \
-    SceneMain/Frustum.cpp \
+	SceneMain/BlurContainer.cpp \
     SceneMain/SquareObject.cpp
 
 HEADERS += \
     commons.hpp \
-    SceneMain/SceneMain.hpp \
-    SceneMain/Camera.hpp \
+	SceneMain/SceneMain.hpp \
     SceneMain/DeferredContainer.hpp \
 	SceneMain/DeferredLight.hpp \
-    SceneMain/BlurContainer.hpp \
-    SceneMain/Frustum.hpp \
+	SceneMain/BlurContainer.hpp \
     SceneMain/SquareObject.hpp
 
 OTHER_FILES += \

@@ -1,5 +1,4 @@
 #include "SquareObject.hpp"
-#include "Camera.hpp"
 #include "DeferredContainer.hpp"
 
 SquareObject::SquareObject() : pos(0.0f) {
@@ -19,9 +18,9 @@ void SquareObject::update(float deltaTime) {
 void SquareObject::draw() const {
     if(renderer->getMode() != DeferredContainer::Deferred) return;
     Camera* cam = (Camera*)getGame()->getObjectByName("playerCam");
-    quad.program->uniform("MVP")->set(cam->projection*cam->view*fullTransform);
+	quad.program->uniform("MVP")->set(cam->projection*cam->getView()*fullTransform);
     quad.program->uniform("M")->set(fullTransform);
-    quad.program->uniform("V")->set(cam->view);
+	quad.program->uniform("V")->set(cam->getView());
     quad.program->uniform("ambient")->set(0.5f);
     quad.program->uniform("specular")->set(1.0f);
     quad.program->uniform("diffuseTex")->set(Textures2D.get("nullRed"));

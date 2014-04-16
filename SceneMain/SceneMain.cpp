@@ -1,5 +1,4 @@
 #include "SceneMain.hpp"
-#include "Camera.hpp"
 #include "DeferredContainer.hpp"
 #include "BlurContainer.hpp"
 #include "SquareObject.hpp"
@@ -9,7 +8,7 @@ SceneMain::SceneMain() : debugCounter(0.0), fpsCount(0) {
 	this->setName("SCENE");
 
 	loadResources();
-	srand(GLOBALCLOCK.getElapsedTime().asMilliseconds());
+	srand(Environment::getClock());
 
 	//GL stuff..:
 	glClearColor(0, 0, 0, 1);
@@ -29,7 +28,7 @@ SceneMain::SceneMain() : debugCounter(0.0), fpsCount(0) {
 	renderer->addTo(blur);
 
     Camera* cam = new Camera("playerCam");
-    cam->projection = glm::perspective(FOV, float(SCRWIDTH)/float(SCRHEIGHT), ZNEAR, ZFAR);
+	cam->projection = glm::perspective(60.0f, float(Environment::getScreen()->getWidth())/float(Environment::getScreen()->getHeight()), 0.1f, 100.0f);
     cam->addTo(this);
 
     SquareObject* sq = new SquareObject();
@@ -45,7 +44,6 @@ SceneMain::~SceneMain() {
 	Textures2D.clear();
 	Meshes.clear();
 	Programs.clear();
-	AudioManager::clear();
 }
 
 void SceneMain::loadResources() {

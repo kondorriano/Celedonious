@@ -1,6 +1,4 @@
 #include "DeferredContainer.hpp"
-#include "Camera.hpp"
-#include "BlurContainer.hpp"
 
 DeferredContainer::DeferredContainer() : gBuffer(NULL), drawMode(Deferred) {
     setName("deferred");
@@ -30,7 +28,6 @@ void DeferredContainer::draw() const {
 	RenderTarget* screen = RenderTarget::getCurrent();
 	//G BUFFER
 	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND); //no transparency whatsoever
 
 	drawMode = Deferred;
@@ -55,7 +52,7 @@ void DeferredContainer::draw() const {
 	quad.program->uniform("color0")->set(getColor0());
 	quad.program->uniform("color1")->set(getColor1());
 	quad.program->uniform("depth")->set(getDepth());
-	quad.program->uniform("invResolution")->set(vec2f(1.0f/SCRWIDTH, 1.0f/SCRHEIGHT));
+	quad.program->uniform("invResolution")->set(vec2f(1.0f/Environment::getScreen()->getWidth(), 1.0f/Environment::getScreen()->getHeight()));
 	quad.draw();
 
 	glDepthFunc(GL_LEQUAL);
