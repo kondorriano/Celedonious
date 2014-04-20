@@ -10,7 +10,7 @@ class SceneMain : public GameObject {
 		void update(float deltaTime);
 
 	private:
-        void loadResources();
+		void loadResources();
 		float debugCounter;
 		int fpsCount;
 };

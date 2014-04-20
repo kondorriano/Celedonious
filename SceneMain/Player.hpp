@@ -11,6 +11,7 @@ class Player : public GameObject {
 		void draw() const;
 
 	private:
+		Model model;
 };
 
 #endif // PLAYER_HPP

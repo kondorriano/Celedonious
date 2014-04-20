@@ -10,12 +10,12 @@ class DeferredLight : public GameObject{
 
 		virtual void update(float deltaTime);
 		void draw() const;
-        vec3f pos;
+		vec3f pos;
 		vec3f color;
-        float radius;
+		float radius;
 	private:
 		DeferredContainer* renderer;
-        Model quad;
+		Model quad;
 };
 
 #endif // DEFERREDLIGHT_HPP

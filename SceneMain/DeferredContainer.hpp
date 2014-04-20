@@ -5,9 +5,9 @@
 class DeferredContainer : public ContainerObject {
 	public:
 
-        enum DrawMode {
+		enum DrawMode {
 			Deferred = 0,
-            Light
+			Light
 		};
 
 		DeferredContainer();
@@ -15,14 +15,14 @@ class DeferredContainer : public ContainerObject {
 
 		void update(float deltaTime);
 		void draw() const;
-        DrawMode getMode() const;
+		DrawMode getMode() const;
 		Texture2D* getColor0() const;
 		Texture2D* getColor1() const;
 		Texture2D* getDepth() const;
 
 	private:
 		RenderTarget* gBuffer;
-        mutable DrawMode drawMode;
+		mutable DrawMode drawMode;
 		mutable Model quad;
 };
 

@@ -11,7 +11,7 @@ DeferredLight::~DeferredLight() {
 
 void DeferredLight::update(float deltaTime) {
 	(void) deltaTime;
-    transform = glm::translate(mat4f(1.0f),pos);
+	transform = glm::translate(mat4f(1.0f),pos);
 }
 
 void DeferredLight::draw() const{

@@ -29,7 +29,7 @@ BlurContainer::BlurContainer() {
 	blurred->getTextureForAttachment(RenderTarget::COLOR0)->setWrap(GL_CLAMP_TO_EDGE);
 
 	quad.mesh = Meshes.get("quad");
-    quad.program = Programs.get("blurMaskPass");
+	quad.program = Programs.get("blurMaskPass");
 }
 
 BlurContainer::~BlurContainer() {
@@ -82,7 +82,7 @@ void BlurContainer::draw() const {
 	GL_ASSERT(glClear(GL_COLOR_BUFFER_BIT));
 	quad.program = Programs.get("textureToScreen");
 	quad.program->uniform("MVP")->set(mat4f(1.0f));
-    quad.program->uniform("tex1")->set(noBlur->getTextureForAttachment(RenderTarget::COLOR0));
+	quad.program->uniform("tex1")->set(noBlur->getTextureForAttachment(RenderTarget::COLOR0));
 	quad.program->uniform("tex2")->set(blurred->getTextureForAttachment(RenderTarget::COLOR0));
 	quad.program->uniform("invResolution")->set(vec2f(1.0f/(Environment::getScreen()->getWidth()), 1.0f/(Environment::getScreen()->getHeight())));
 	quad.draw();

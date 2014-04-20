@@ -4,18 +4,18 @@
 
 class DeferredContainer;
 class SquareObject : public GameObject {
-    public:
-        SquareObject();
-        ~SquareObject();
+	public:
+		SquareObject();
+		~SquareObject();
 
-        void update(float deltaTime);
-        void draw() const;
+		void update(float deltaTime);
+		void draw() const;
 
-        vec3f pos;
+		vec3f pos;
 
-    private:
-        Model quad;
-        DeferredContainer* renderer;
+	private:
+		Model quad;
+		DeferredContainer* renderer;
 };
 
 #endif // SQUAREOBJECT_HPP

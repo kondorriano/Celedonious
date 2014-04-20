@@ -1,18 +1,18 @@
 #include "DeferredContainer.hpp"
 
 DeferredContainer::DeferredContainer() : gBuffer(NULL), drawMode(Deferred) {
-    setName("deferred");
+	setName("deferred");
 	gBuffer = new RenderTarget();
-    gBuffer->addTexture(RenderTarget::DEPTH, Texture::DEPTH_COMPONENT32); //Z-BUFFER
-    gBuffer->addTexture(RenderTarget::COLOR0, Texture::RGB8); //COLOR
-    gBuffer->addTexture(RenderTarget::COLOR1, Texture::RGBA16F); //NORMAL, BRIGHTNESS, SPECULAR FACTOR
+	gBuffer->addTexture(RenderTarget::DEPTH, Texture::DEPTH_COMPONENT32); //Z-BUFFER
+	gBuffer->addTexture(RenderTarget::COLOR0, Texture::RGB8); //COLOR
+	gBuffer->addTexture(RenderTarget::COLOR1, Texture::RGBA16F); //NORMAL, BRIGHTNESS, SPECULAR FACTOR
 	gBuffer->build();
-    gBuffer->getTextureForAttachment(RenderTarget::COLOR0)->setFilter(GL_NEAREST, GL_NEAREST);
-    gBuffer->getTextureForAttachment(RenderTarget::COLOR1)->setFilter(GL_NEAREST, GL_NEAREST);
+	gBuffer->getTextureForAttachment(RenderTarget::COLOR0)->setFilter(GL_NEAREST, GL_NEAREST);
+	gBuffer->getTextureForAttachment(RenderTarget::COLOR1)->setFilter(GL_NEAREST, GL_NEAREST);
 	gBuffer->getTextureForAttachment(RenderTarget::DEPTH)->setFilter(GL_NEAREST, GL_NEAREST);
 
-    quad.mesh = Meshes.get("quad");
-    quad.program = Programs.get("ambientPass");
+	quad.mesh = Meshes.get("quad");
+	quad.program = Programs.get("ambientPass");
 }
 
 DeferredContainer::~DeferredContainer() {
@@ -20,7 +20,7 @@ DeferredContainer::~DeferredContainer() {
 }
 
 void DeferredContainer::update(float deltaTime) {
-    ContainerObject::update(deltaTime);
+	ContainerObject::update(deltaTime);
 }
 
 void DeferredContainer::draw() const {
@@ -60,18 +60,18 @@ void DeferredContainer::draw() const {
 }
 
 DeferredContainer::DrawMode DeferredContainer::getMode() const {
-    return drawMode;
+	return drawMode;
 }
 
 Texture2D *DeferredContainer::getColor0() const {
-    return gBuffer->getTextureForAttachment(RenderTarget::COLOR0);
+	return gBuffer->getTextureForAttachment(RenderTarget::COLOR0);
 }
 
 Texture2D *DeferredContainer::getColor1() const {
-    return gBuffer->getTextureForAttachment(RenderTarget::COLOR1);
+	return gBuffer->getTextureForAttachment(RenderTarget::COLOR1);
 }
 
 Texture2D* DeferredContainer::getDepth() const {
-    return gBuffer->getTextureForAttachment(RenderTarget::DEPTH);
+	return gBuffer->getTextureForAttachment(RenderTarget::DEPTH);
 }
 
