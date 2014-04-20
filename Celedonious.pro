@@ -1,6 +1,7 @@
 include(VBE/VBE.pro)
 INCLUDEPATH += .
 #DEFINES += __DLOG
+LIBS += -lBox2D
 SOURCES += main.cpp \
     commons.cpp \
 	SceneMain/SceneMain.cpp \
@@ -8,7 +9,9 @@ SOURCES += main.cpp \
 	SceneMain/DeferredLight.cpp \
 	SceneMain/BlurContainer.cpp \
     SceneMain/SquareObject.cpp \
-    SceneMain/Player.cpp
+    SceneMain/Player.cpp \
+    SceneMain/PhysicsEngine.cpp \
+    SceneMain/PhysicsBody.cpp
 
 HEADERS += \
     commons.hpp \
@@ -17,7 +20,9 @@ HEADERS += \
 	SceneMain/DeferredLight.hpp \
 	SceneMain/BlurContainer.hpp \
     SceneMain/SquareObject.hpp \
-    SceneMain/Player.hpp
+    SceneMain/Player.hpp \
+    SceneMain/PhysicsEngine.hpp \
+    SceneMain/PhysicsBody.hpp
 
 OTHER_FILES += \
     data/shaders/quad.vert \
