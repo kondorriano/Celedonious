@@ -3,8 +3,9 @@
 #include "BlurContainer.hpp"
 #include "SquareObject.hpp"
 #include "DeferredLight.hpp"
+#include "Player.hpp"
 
-SceneMain::SceneMain() : debugCounter(0.0), fpsCount(0) {
+SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
 
 	loadResources();
@@ -27,16 +28,15 @@ SceneMain::SceneMain() : debugCounter(0.0), fpsCount(0) {
 	DeferredContainer* renderer = new DeferredContainer();
 	renderer->addTo(blur);
 
-	Camera* cam = new Camera("playerCam");
-	cam->projection = glm::perspective(60.0f, float(Environment::getScreen()->getWidth())/float(Environment::getScreen()->getHeight()), 0.1f, 100.0f);
-	cam->addTo(this);
+	Player* player = new Player();
+	player->addTo(renderer);
 
 	SquareObject* sq = new SquareObject();
-	sq->pos = vec3f(0,0,-10);
+	sq->pos = vec3f(0.0f,0.0f,0.0f);
 	sq->addTo(renderer);
 
 	DeferredLight* dl = new DeferredLight();
-	dl->pos = vec3f(-5,5,-5);
+	dl->pos = vec3f(5.0f,5.0f,5.0f);
 	dl->addTo(renderer);
 }
 
