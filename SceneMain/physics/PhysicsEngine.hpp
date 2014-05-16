@@ -2,7 +2,7 @@
 #define PHYSICSENGINE_HPP
 #include "commons.hpp"
 
-class PhysicsEngine : public GameObject {
+class PhysicsEngine : public GameObject, public b2ContactListener {
 	public:
 		PhysicsEngine(vec2f gravity = vec2f(0.0f, 9.8f), float timestep = 60.0f, int velIters = 2, int posIters = 8);
 		~PhysicsEngine();
