@@ -1,35 +1,30 @@
-#include "SquareObject.hpp"
+#include "Level.hpp"
 #include "DeferredContainer.hpp"
 #include "physics/PolygonCollider.hpp"
 
-SquareObject::SquareObject() {
+Level::Level() {
 	quad.mesh = Meshes.get("quad");
 	quad.program = Programs.get("deferredModel");
 	renderer = (DeferredContainer*)getGame()->getObjectByName("deferred");
 	PolygonCollider* p = new PolygonCollider();
 	p->setAsBox(1.0f,1.0f);
-	p->setPosition(vec2f(-1.5f,0.0f));
-	p->setFixedRotation(false);
-	p->setRotation(glm::radians(15.0f));
-	p->setBullet(false);
-	p->setAngularDamping(0.0f);
-	p->setFriction(0.3f);
-	p->setLinearDamping(0.0f);
+	p->setDType(Collider::Static);
+	p->setTransform(vec2f(0, -3), 0);
+	p->setFriction(0.2f);
 	p->setDensity(1.0f);
 	setCollider(p);
 }
 
-SquareObject::~SquareObject() {
+Level::~Level() {
 }
 
-void SquareObject::update(float deltaTime) {
+void Level::update(float deltaTime) {
 	(void) deltaTime;
-	VBE_LOG(getCollider()->getRotation());
 	transform = glm::translate(mat4f(1.0f), vec3f(getCollider()->getPosition(), 0.0f));
-	transform = glm::rotate(transform, glm::degrees(getCollider()->getRotation()), vec3f(0, 0, 1));
+	transform = glm::rotate(transform, getCollider()->getRotation(), vec3f(0, 0, 1));
 }
 
-void SquareObject::draw() const {
+void Level::draw() const {
 	if(renderer->getMode() != DeferredContainer::Deferred) return;
 	Camera* cam = (Camera*)getGame()->getObjectByName("playerCam");
 	quad.program->uniform("MVP")->set(cam->projection*cam->getView()*fullTransform);
@@ -37,6 +32,6 @@ void SquareObject::draw() const {
 	quad.program->uniform("V")->set(cam->getView());
 	quad.program->uniform("ambient")->set(0.5f);
 	quad.program->uniform("specular")->set(1.0f);
-	quad.program->uniform("diffuseTex")->set(Textures2D.get("nullRed"));
+	quad.program->uniform("diffuseTex")->set(Textures2D.get("nullBlue"));
 	quad.draw();
 }

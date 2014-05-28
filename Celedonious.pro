@@ -11,7 +11,11 @@ SOURCES += main.cpp \
 	SceneMain/SquareObject.cpp \
 	SceneMain/Player.cpp \
 	SceneMain/physics/PhysicsEngine.cpp \
-	SceneMain/physics/PhysicsBody.cpp
+	SceneMain/physics/PhysicsBody.cpp \
+    SceneMain/physics/Collider.cpp \
+    SceneMain/physics/CircleCollider.cpp \
+    SceneMain/physics/PolygonCollider.cpp \
+    SceneMain/Level.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -22,7 +26,11 @@ HEADERS += \
 	SceneMain/SquareObject.hpp \
 	SceneMain/Player.hpp \
 	SceneMain/physics/PhysicsEngine.hpp \
-	SceneMain/physics/PhysicsBody.hpp
+	SceneMain/physics/PhysicsBody.hpp \
+    SceneMain/physics/Collider.hpp \
+    SceneMain/physics/CircleCollider.hpp \
+    SceneMain/physics/PolygonCollider.hpp \
+    SceneMain/Level.hpp
 
 OTHER_FILES += \
 	data/shaders/quad.vert \

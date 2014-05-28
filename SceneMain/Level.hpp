@@ -1,13 +1,13 @@
-#ifndef SQUAREOBJECT_HPP
-#define SQUAREOBJECT_HPP
+#ifndef LEVEL_HPP
+#define LEVEL_HPP
 #include "commons.hpp"
 #include "physics/PhysicsBody.hpp"
 
 class DeferredContainer;
-class SquareObject : public PhysicsBody {
+class Level : public PhysicsBody {
 	public:
-		SquareObject();
-		~SquareObject();
+		Level();
+		~Level();
 
 		void update(float deltaTime);
 		void draw() const;
@@ -16,5 +16,4 @@ class SquareObject : public PhysicsBody {
 		Model quad;
 		DeferredContainer* renderer;
 };
-
-#endif // SQUAREOBJECT_HPP
+#endif // LEVEL_HPP

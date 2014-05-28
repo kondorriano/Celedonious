@@ -4,6 +4,8 @@
 #include "SquareObject.hpp"
 #include "DeferredLight.hpp"
 #include "Player.hpp"
+#include "physics/PhysicsEngine.hpp"
+#include "Level.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
@@ -20,7 +22,8 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	glEnable(GL_CULL_FACE); //enable backface culling
 	glCullFace(GL_BACK);
 
-	//getGame()->getWindow().setVerticalSyncEnabled(true);
+	PhysicsEngine* pe = new PhysicsEngine();
+	pe->addTo(this);
 
 	BlurContainer* blur = new BlurContainer();
 	blur->addTo(this);
@@ -32,8 +35,10 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	player->addTo(renderer);
 
 	SquareObject* sq = new SquareObject();
-	sq->pos = vec3f(0.0f,0.0f,0.0f);
 	sq->addTo(renderer);
+
+	Level* level = new Level();
+	level->addTo(renderer);
 
 	DeferredLight* dl = new DeferredLight();
 	dl->pos = vec3f(5.0f,5.0f,5.0f);
