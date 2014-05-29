@@ -70,12 +70,12 @@ class Collider {
 		DType B2TypeToDType(b2BodyType t) const;
 		b2BodyType DTypeToB2Type(DType t) const;
 
+		b2Body* pBody;
+
 		float friction;
 		float restitution;
 		float density;
 		bool sensor;
-
-		b2Body* pBody;
 };
 
 #endif // COLLIDER_HPP

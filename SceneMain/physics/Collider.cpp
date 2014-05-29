@@ -2,7 +2,7 @@
 #include "PhysicsEngine.hpp"
 #include "PhysicsBody.hpp"
 
-Collider::Collider() : pBody(nullptr) {
+Collider::Collider() : pBody(nullptr), friction(0.1f), restitution(0.25f), density(1.0f), sensor(false) {
 	pBody = PhysicsEngine::createBody();
 	pBody->SetUserData(nullptr);
 	setActive(true);
@@ -13,6 +13,9 @@ Collider::Collider() : pBody(nullptr) {
 	setRotation(0.0f);
 	setPosition(vec2f(0.0f,0.0f));
 	setDType(Dynamic);
+	setAngularVelocity(0.0f);
+	setFixedRotation(false);
+	setLinearVelocity(vec2f(0.0f));
 }
 
 Collider::~Collider() {

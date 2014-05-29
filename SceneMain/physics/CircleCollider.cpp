@@ -2,10 +2,6 @@
 #include "PhysicsEngine.hpp"
 
 CircleCollider::CircleCollider() : fixture(nullptr) {
-	setSensor(false);
-	setDensity(1.0f);
-	setFriction(0.1f);
-	setRestitution(0.1f);
 	setRadius(1.0f);
 }
 

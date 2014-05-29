@@ -8,14 +8,7 @@ SquareObject::SquareObject() {
 	renderer = (DeferredContainer*)getGame()->getObjectByName("deferred");
 	PolygonCollider* p = new PolygonCollider();
 	p->setAsBox(1.0f,1.0f);
-	p->setPosition(vec2f(-1.5f,0.0f));
-	p->setFixedRotation(false);
-	p->setRotation(glm::radians(15.0f));
-	p->setBullet(false);
-	p->setAngularDamping(0.0f);
-	p->setFriction(0.3f);
-	p->setLinearDamping(0.0f);
-	p->setDensity(1.0f);
+	p->setPosition(vec2f(-1.1f,0.0f));
 	setCollider(p);
 }
 
