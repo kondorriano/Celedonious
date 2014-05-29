@@ -4,8 +4,9 @@
 #include "SquareObject.hpp"
 #include "DeferredLight.hpp"
 #include "Player.hpp"
-#include "physics/PhysicsEngine.hpp"
 #include "Level.hpp"
+#include "DebugDrawer.hpp"
+#include "physics/PhysicsEngine.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
@@ -22,14 +23,16 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	glEnable(GL_CULL_FACE); //enable backface culling
 	glCullFace(GL_BACK);
 
-	PhysicsEngine* pe = new PhysicsEngine();
-	pe->addTo(this);
+	PhysicsEngine::init();
 
 	BlurContainer* blur = new BlurContainer();
 	blur->addTo(this);
 
 	DeferredContainer* renderer = new DeferredContainer();
 	renderer->addTo(blur);
+
+	DebugDrawer* dbg = new DebugDrawer();
+	dbg->addTo(renderer);
 
 	Player* player = new Player();
 	player->addTo(renderer);
@@ -49,12 +52,13 @@ SceneMain::~SceneMain() {
 	Textures2D.clear();
 	Meshes.clear();
 	Programs.clear();
+	PhysicsEngine::close();
 }
 
 void SceneMain::loadResources() {
 	//meshes
 	std::vector<Vertex::Element> elems = {
-		Vertex::Element(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3))
+		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3)
 	};
 	std::vector<vec3f> data = {
 		vec3f(1, -1, 0), vec3f(1, 1, 0), vec3f(-1, 1, 0),
@@ -79,17 +83,18 @@ void SceneMain::loadResources() {
 	Textures2D.add("nullWhite", Texture2D::createFromRaw(pixels5, 1, 1));
 
 	//program
-	Programs.add("deferredLight", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/light.frag"));
+	Programs.add("deferredLight", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/light.frag"));
 	Programs.add("deferredModel", ShaderProgram::loadFromFile("data/shaders/standardDeferred.vert", "data/shaders/standardDeferred.frag"));
-	Programs.add("ambientPass", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/ambientPass.frag"));
-	Programs.add("blurPassVertical", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/blurPassVertical.frag"));
-	Programs.add("blurPassHoritzontal", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/blurPassHoritzontal.frag"));
-	Programs.add("textureToScreen", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/quad.frag"));
-	Programs.add("blurMaskPass", ShaderProgram::loadFromFile("data/shaders/quad.vert", "data/shaders/blurMaskPass.frag"));
+	Programs.add("ambientPass", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/ambientPass.frag"));
+	Programs.add("blurPassVertical", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/blurPassVertical.frag"));
+	Programs.add("blurPassHoritzontal", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/blurPassHoritzontal.frag"));
+	Programs.add("textureToScreen", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/quad.frag"));
+	Programs.add("blurMaskPass", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/blurMaskPass.frag"));
 	Programs.add("depthShader", ShaderProgram::loadFromFile("data/shaders/depth.vert","data/shaders/depth.frag"));
 }
 
 void SceneMain::update(float deltaTime) {
+	PhysicsEngine::update(deltaTime);
 	++fpsCount;
 	debugCounter += deltaTime;
 	if (debugCounter > 1) {

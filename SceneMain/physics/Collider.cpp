@@ -2,9 +2,8 @@
 #include "PhysicsEngine.hpp"
 #include "PhysicsBody.hpp"
 
-Collider::Collider() : pBody(nullptr), pEngine(nullptr) {
-	pEngine = (PhysicsEngine*) Game::i()->getObjectByName("physicsEngine");
-	pBody = pEngine->createBody();
+Collider::Collider() : pBody(nullptr) {
+	pBody = PhysicsEngine::createBody();
 	pBody->SetUserData(nullptr);
 	setActive(true);
 	setBullet(false);
@@ -17,7 +16,7 @@ Collider::Collider() : pBody(nullptr), pEngine(nullptr) {
 }
 
 Collider::~Collider() {
-	pEngine->deleteBody(pBody);
+	PhysicsEngine::deleteBody(pBody);
 	pBody = nullptr;
 }
 

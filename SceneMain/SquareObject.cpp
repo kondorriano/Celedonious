@@ -24,7 +24,6 @@ SquareObject::~SquareObject() {
 
 void SquareObject::update(float deltaTime) {
 	(void) deltaTime;
-	VBE_LOG(getCollider()->getRotation());
 	transform = glm::translate(mat4f(1.0f), vec3f(getCollider()->getPosition(), 0.0f));
 	transform = glm::rotate(transform, glm::degrees(getCollider()->getRotation()), vec3f(0, 0, 1));
 }

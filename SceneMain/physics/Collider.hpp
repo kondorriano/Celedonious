@@ -76,7 +76,6 @@ class Collider {
 		bool sensor;
 
 		b2Body* pBody;
-		PhysicsEngine* pEngine;
 };
 
 #endif // COLLIDER_HPP

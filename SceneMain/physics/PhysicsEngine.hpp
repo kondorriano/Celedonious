@@ -2,25 +2,29 @@
 #define PHYSICSENGINE_HPP
 #include "commons.hpp"
 
-class PhysicsEngine : public GameObject, public b2ContactListener {
+class PhysicsDebugDrawer;
+class PhysicsEngine : public b2ContactListener {
 	public:
-		PhysicsEngine(vec2f gravity = vec2f(0.0f, -9.8f), float timestep = 60.0f, int velIters = 2, int posIters = 8);
-		~PhysicsEngine();
-
-		void update(float deltaTime);
-		void draw() const;
+		static void init(vec2f gravity = vec2f(0.0f, -9.8f), float step = 60.0f, int velIters = 2, int posIters = 8);
+		static void update(float deltaTime);
+		static void draw(const PhysicsDebugDrawer* drawer);
+		static void close();
 
 	private:
-		b2Body*createBody();
-		void deleteBody(b2Body* body);
+		static b2Body* createBody();
+		static void deleteBody(b2Body* body);
 
-		b2World world;
-		const float timestep;
-		const int velocityIterations;
-		const int positionIterations;
-		float accumulated;
+		static b2World* world;
+		static float timestep;
+		static int velocityIterations;
+		static int positionIterations;
+		static float accumulated;
 
 		friend class Collider;
+
+		PhysicsEngine() {}
+		~PhysicsEngine() {}
+
 };
 
 #endif // PHYSICSENGINE_HPP

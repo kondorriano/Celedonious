@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     SceneMain/physics/Collider.cpp \
     SceneMain/physics/CircleCollider.cpp \
     SceneMain/physics/PolygonCollider.cpp \
-    SceneMain/Level.cpp
+    SceneMain/Level.cpp \
+    SceneMain/DebugDrawer.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -30,10 +31,11 @@ HEADERS += \
     SceneMain/physics/Collider.hpp \
     SceneMain/physics/CircleCollider.hpp \
     SceneMain/physics/PolygonCollider.hpp \
-    SceneMain/Level.hpp
+    SceneMain/Level.hpp \
+    SceneMain/physics/PhysicsDebugDrawer.hpp \
+    SceneMain/DebugDrawer.hpp
 
 OTHER_FILES += \
-	data/shaders/quad.vert \
 	data/shaders/light.frag \
 	data/shaders/blurPassVertical.frag \
 	data/shaders/blurPassHoritzontal.frag \
@@ -43,5 +45,6 @@ OTHER_FILES += \
 	data/shaders/depth.vert \
 	data/shaders/standardDeferred.vert \
 	data/shaders/standardDeferred.frag \
-	data/shaders/ambientPass.frag
+	data/shaders/ambientPass.frag \
+    data/shaders/debug.frag
 
