@@ -2,11 +2,11 @@
 #include "PhysicsEngine.hpp"
 
 PolygonCollider::PolygonCollider() : fixture(nullptr) {
-	setAsBox(1.0,1.0);
 	setSensor(false);
 	setDensity(1.0f);
 	setFriction(0.1f);
-	setRestitution(1.0f);
+	setRestitution(0.1f);
+	setAsBox(1.0,1.0);
 }
 
 PolygonCollider::~PolygonCollider(){
@@ -14,25 +14,25 @@ PolygonCollider::~PolygonCollider(){
 
 void PolygonCollider::setDensity(float density) {
 	this->density = density;
-	fixture->SetDensity(density);
+	if(fixture != nullptr) fixture->SetDensity(density);
 	pBody->ResetMassData();
 }
 
 void PolygonCollider::setFriction(float friction) {
 	this->friction = friction;
-	fixture->SetFriction(friction);
+	if(fixture != nullptr) fixture->SetFriction(friction);
 	pBody->ResetMassData();
 }
 
 void PolygonCollider::setRestitution(float restitution) {
 	this->restitution = restitution;
-	fixture->SetRestitution(restitution);
+	if(fixture != nullptr) fixture->SetRestitution(restitution);
 	pBody->ResetMassData();
 }
 
 void PolygonCollider::setSensor(bool sensor) {
 	this->sensor = sensor;
-	fixture->SetSensor(sensor);
+	if(fixture != nullptr) fixture->SetSensor(sensor);
 	pBody->ResetMassData();
 }
 
@@ -40,6 +40,10 @@ void PolygonCollider::remake() {
 	if(fixture != nullptr) pBody->DestroyFixture(fixture);
 	b2FixtureDef d;
 	d.shape = &shape;
+	d.density = density;
+	d.friction = friction;
+	d.isSensor = sensor;
+	d.restitution = restitution;
 	fixture = pBody->CreateFixture(&d);
 	pBody->ResetMassData();
 }

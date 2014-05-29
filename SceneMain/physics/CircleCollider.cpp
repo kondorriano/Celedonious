@@ -2,11 +2,11 @@
 #include "PhysicsEngine.hpp"
 
 CircleCollider::CircleCollider() : fixture(nullptr) {
-	setRadius(1.0f);
 	setSensor(false);
 	setDensity(1.0f);
 	setFriction(0.1f);
-	setRestitution(1.0f);
+	setRestitution(0.1f);
+	setRadius(1.0f);
 }
 
 CircleCollider::~CircleCollider(){
@@ -14,25 +14,25 @@ CircleCollider::~CircleCollider(){
 
 void CircleCollider::setDensity(float density) {
 	this->density = density;
-	fixture->SetDensity(density);
+	if(fixture != nullptr) fixture->SetDensity(density);
 	pBody->ResetMassData();
 }
 
 void CircleCollider::setFriction(float friction) {
 	this->friction = friction;
-	fixture->SetFriction(friction);
+	if(fixture != nullptr) fixture->SetFriction(friction);
 	pBody->ResetMassData();
 }
 
 void CircleCollider::setRestitution(float restitution) {
 	this->restitution = restitution;
-	fixture->SetRestitution(restitution);
+	if(fixture != nullptr) fixture->SetRestitution(restitution);
 	pBody->ResetMassData();
 }
 
 void CircleCollider::setSensor(bool sensor) {
 	this->sensor = sensor;
-	fixture->SetSensor(sensor);
+	if(fixture != nullptr) fixture->SetSensor(sensor);
 	pBody->ResetMassData();
 }
 
