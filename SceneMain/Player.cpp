@@ -5,7 +5,7 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
 	model.program = Programs.get("deferredModel");
 	model.mesh = Meshes.get("quad");
-	cam = new Camera("playerCam",vec3f(0,0,10));
+	cam = new Camera("playerCam",vec3f(0,0,20));
 	cam->projection = glm::perspective(60.0f, float(Environment::getScreen()->getWidth())/float(Environment::getScreen()->getHeight()), 0.1f, 100.0f);
 	cam->addTo(this);
 }

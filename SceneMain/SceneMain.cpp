@@ -6,6 +6,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 #include "DebugDrawer.hpp"
+#include "FluidSimulation.hpp"
 #include "physics/PhysicsEngine.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
@@ -22,6 +23,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_CULL_FACE); //enable backface culling
 	glCullFace(GL_BACK);
+	glPointSize(5.0f);
 
 	PhysicsEngine::init();
 
@@ -30,6 +32,9 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 
 	DeferredContainer* renderer = new DeferredContainer();
 	renderer->addTo(blur);
+
+	FluidSimulation* fs = new FluidSimulation();
+	fs->addTo(renderer);
 
 	DebugDrawer* dbg = new DebugDrawer();
 	dbg->addTo(renderer);
@@ -91,6 +96,7 @@ void SceneMain::loadResources() {
 	Programs.add("textureToScreen", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/quad.frag"));
 	Programs.add("blurMaskPass", ShaderProgram::loadFromFile("data/shaders/depth.vert", "data/shaders/blurMaskPass.frag"));
 	Programs.add("depthShader", ShaderProgram::loadFromFile("data/shaders/depth.vert","data/shaders/depth.frag"));
+	Programs.add("debug", ShaderProgram::loadFromFile("data/shaders/depth.vert","data/shaders/debug.frag"));
 }
 
 void SceneMain::update(float deltaTime) {

@@ -8,6 +8,7 @@ class PhysicsEngine : public b2ContactListener {
 		static void init(vec2f gravity = vec2f(0.0f, -9.8f), float step = 60.0f, int velIters = 2, int posIters = 8);
 		static void update(float deltaTime);
 		static void draw(const PhysicsDebugDrawer* drawer);
+		static void drawGrid(const PhysicsDebugDrawer* drawer);
 		static void close();
 
 	private:

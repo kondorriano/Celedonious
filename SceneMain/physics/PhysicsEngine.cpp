@@ -37,6 +37,13 @@ void PhysicsEngine::draw(const PhysicsDebugDrawer* drawer) {
 	world->DrawDebugData();
 }
 
+void PhysicsEngine::drawGrid(const PhysicsDebugDrawer* drawer) {
+	for(int i = -10; i <= 10; ++i) {
+		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(-10, i), vec2f(10, i), vec3f(1.0f));
+		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(i, 10), vec2f(i, -10), vec3f(1.0f));
+	}
+}
+
 b2Body* PhysicsEngine::createBody() {
 	VBE_ASSERT(world != nullptr, "Trying to add collider to an not-init physics simulation");
 	b2BodyDef b;

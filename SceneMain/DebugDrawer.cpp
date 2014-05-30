@@ -11,20 +11,20 @@ DebugDrawer::DebugDrawer() : renderer(nullptr) {
 	for(int i = 0; i < 360; i += 10) {coords.push_back(vec2f(cos(i*DEG_TO_RAD), sin(i*DEG_TO_RAD)));}
 	circle.mesh = Mesh::loadEmpty(f,Mesh::DYNAMIC);
 	circle.mesh->setVertexData(&coords[0], coords.size());
-	circle.program = ShaderProgram::loadFromFile("data/shaders/depth.vert","data/shaders/debug.frag");
+	circle.program = Programs.get("debug");
 	poly.mesh = Mesh::loadEmpty(f,Mesh::DYNAMIC);
-	poly.program = circle.program;
+	poly.program = Programs.get("debug");
 }
 
 DebugDrawer::~DebugDrawer(){
 	delete circle.mesh;
 	delete poly.mesh;
-	delete circle.program;
 }
 
 void DebugDrawer::draw() const {
 	if(renderer->getMode() != DeferredContainer::Forward || !Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) return;
 	PhysicsEngine::draw(this);
+	PhysicsEngine::drawGrid(this);
 }
 
 void DebugDrawer::drawPolygon(const vec2f* vertices, int vertexCount, const vec3f& color) {
