@@ -23,7 +23,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_CULL_FACE); //enable backface culling
 	glCullFace(GL_BACK);
-	glPointSize(5.0f);
+	glPointSize(4.0f);
 
 	PhysicsEngine::init();
 

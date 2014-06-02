@@ -8,25 +8,55 @@ constexpr float FluidSimulation::IDEAL_RADIUS;
 constexpr float FluidSimulation::IDEAL_RADIUS_SQ;
 constexpr float FluidSimulation::MULTIPLIER;
 constexpr float FluidSimulation::CELL_SIZE;
+constexpr int FluidSimulation::WORKER_THREADS;
 constexpr int Particle::MAX_NEIGHBORS;
+constexpr int Particle::MAX_FIXTURES_TO_TEST;
 
-FluidSimulation::FluidSimulation() : numActiveParticles(0), renderer(nullptr) {
+FluidSimulation::FluidSimulation() : TaskPool(WORKER_THREADS, [](){/*init function*/}), accumulatedTime(0.0f), numActiveParticles(0), renderer(nullptr) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
-	std::vector<Vertex::Element> e = {Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2)};
+	std::vector<Vertex::Element> e;
+	e.push_back(Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2));
 	Vertex::Format f(e);
 	m.mesh = Mesh::loadEmpty(f,Mesh::DYNAMIC);
 	m.program = Programs.get("debug");
-	for(int i = 0; i < MAX_PARTICLES; ++i) liquid[i].index = i;
+	liquid = new Particle[MAX_PARTICLES];
+	activeParticles = new int[MAX_PARTICLES];
+	delta = new vec2f[MAX_PARTICLES];
+	scaledPositions = new vec2f[MAX_PARTICLES];
+	scaledVelocities = new vec2f[MAX_PARTICLES];
+	simulationAABB = AABB(vec3f(-20.0f, -20.0f, 0.0f), vec3f(20.0f, 20.0f, 0.0f));
+	for(int i = 0; i < MAX_PARTICLES; ++i) {
+		liquid[i].index = i;
+		activeParticles[i] = 0;
+		delta[i] = vec2f(0.0f);
+		scaledPositions[i] = vec2f(0.0f);
+		scaledVelocities[i] = vec2f(0.0f);
+	}
+	Log::message()
+			<< "FLUID SIMULATION INFO" << Log::Line
+			<< "=====================" << Log::Line
+			<< "DT: " << DT << Log::Line
+			<< "MAX_PARTICLES: " << MAX_PARTICLES << Log::Line
+			<< "RADIUS: " << RADIUS << Log::Line
+			<< "VISCOSITY: " << VISCOSITY << Log::Line
+			<< "IDEAL_RADIUS: " << IDEAL_RADIUS << Log::Line
+			<< "IDEAL_RADIUS_SQ: " << IDEAL_RADIUS_SQ << Log::Line
+			<< "MULTIPLIER: " << MULTIPLIER << Log::Line
+			<< "CELL_SIZE: " << CELL_SIZE << Log::Line
+			<< "WORKER_THREADS: " << WORKER_THREADS << Log::Flush;
 }
 
 FluidSimulation::~FluidSimulation() {
 }
 
 void FluidSimulation::update(float deltaTime) {
-	(void) deltaTime;
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	if(Environment::getMouse()->isButtonHeld(Mouse::Left)) createParticle(vec2f(cam->getWorldPos().x, cam->getWorldPos().y), 1);
-	applyLiquidConstraints();
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) createParticle(vec2f(cam->getWorldPos().x, cam->getWorldPos().y), 1);
+	accumulatedTime += deltaTime;
+	while(accumulatedTime >= DT) {
+		applyLiquidConstraints();
+		accumulatedTime -= DT;
+	}
 }
 
 void FluidSimulation::draw() const {
@@ -37,12 +67,113 @@ void FluidSimulation::draw() const {
 	m.mesh->setVertexData(&data[0], data.size());
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
 	m.mesh->setPrimitiveType(Mesh::POINTS);
-	m.program->uniform("color")->set(vec3f(1.0f));
+	m.program->uniform("color")->set(vec4f(1.0f, 1.0f, 1.0f, 0.5f));
 	m.program->uniform("MVP")->set(cam->projection*cam->getView());
 	m.draw();
 }
 
+void FluidSimulation::prepareSimulation(int index) {
+	Particle* particle = &liquid[index];
+	// Find neighbors
+	findNeighbors(particle);
+	// Scale positions and velocities
+	scaledPositions[index] = particle->position * MULTIPLIER;
+	scaledVelocities[index] = particle->velocity * MULTIPLIER;
+	// Reset deltas
+	delta[index] = vec2f(0.0f);
+	for(int i = 0; i < particle->neighborCount; ++i)
+		particle->neighborsDelta[i] = vec2f(0.0f);
+	//Reset pressures
+	particle->p = 0.0f;
+	particle->pnear = 0.0f;
+}
+
+void FluidSimulation::calculatePressure(int index) {
+	Particle* particle = &liquid[index];
+	for (int a = 0; a < particle->neighborCount; a++) {
+		vec2f relativePosition = scaledPositions[particle->neighbors[a]] - scaledPositions[index];
+		float distanceSq = glm::length(relativePosition)*glm::length(relativePosition);
+		if (distanceSq < IDEAL_RADIUS_SQ) {
+			particle->distances[a] = std::sqrt(distanceSq);
+			if (particle->distances[a] < EPSILON) particle->distances[a] = IDEAL_RADIUS - .01f;
+			float oneminusq = 1.0f - (particle->distances[a] / IDEAL_RADIUS);
+			particle->p = (particle->p + oneminusq * oneminusq);
+			particle->pnear = (particle->pnear + oneminusq * oneminusq * oneminusq);
+		}
+		else particle->distances[a] = std::numeric_limits<float>::max();
+	}
+}
+
+void FluidSimulation::calculateForce(int index) {
+	Particle* particle = &liquid[index];
+	float pressure = (particle->p - 5.0f) / 2.0f; //normal pressure term
+	float presnear = particle->pnear / 2.0f; //near particles term
+	vec2f change(0.0f);
+	for (int a = 0; a < particle->neighborCount; a++) {
+		vec2f relativePosition = scaledPositions[particle->neighbors[a]] - scaledPositions[index];
+		if (particle->distances[a] < IDEAL_RADIUS) {
+			float q = particle->distances[a] / IDEAL_RADIUS;
+			float oneminusq = 1.0f - q;
+			float factor = oneminusq * (pressure + presnear * oneminusq) / (2.0f * particle->distances[a]);
+			vec2f d = relativePosition * factor;
+			vec2f relativeVelocity = scaledVelocities[particle->neighbors[a]] - scaledVelocities[index];
+			factor = VISCOSITY * oneminusq * DT;
+			d -= relativeVelocity * factor;
+			particle->neighborsDelta[a] += d;
+			change -= d;
+		}
+	}
+
+	std::unique_lock<std::mutex> lock(deltaMutex);
+	for (int j = 0; j < particle->neighborCount; j++)
+		delta[particle->neighbors[j]] += particle->neighborsDelta[j] / MULTIPLIER;
+	delta[index] += change / MULTIPLIER;
+	particle->velocity += vec2f(0.0f, -9.8f) / 3000.0f;
+	lock.unlock();
+}
+
+void FluidSimulation::moveParticle(int index) {
+	Particle* particle = &liquid[index];
+	//apply delta// Update velocity
+	particle->velocity += delta[index];
+	// Update position
+	particle->position += delta[index];
+	particle->position += particle->velocity;
+	//recalculate grid position
+	int x = getGridX(particle->position.x);
+	int y = getGridY(particle->position.y);
+	if (particle->ci == x && particle->cj == y) return;
+	//remove from grid and erase cells if necessary
+	grid[particle->ci][particle->cj].remove(index);
+	if (grid[particle->ci][particle->cj].size() == 0) {
+		grid[particle->ci].erase(particle->cj);
+		if (grid[particle->ci].size() == 0) grid.erase(particle->ci);
+	}
+	//reinsert into grid, create cells if necessary
+	if (grid.find(x) == grid.end())
+		grid[x] = std::map<int, std::list<int>>();
+	if (grid[x].find(y) == grid[x].end())
+		grid[x][y] = std::list<int>();
+	grid[x][y].push_back(index);
+	//apply changes to particle
+	particle->ci = x;
+	particle->cj = y;
+}
+
+void FluidSimulation::applyLiquidConstraints() {
+	//PARALLEL
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {prepareSimulation(activeParticles[i]);});
+	wait(); //wait for all parallel jobs to end
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculatePressure(activeParticles[i]);});
+	wait();
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculateForce(activeParticles[i]);});
+	wait();
+	//NOT PARALLEL
+	for (int i = 0; i < numActiveParticles; i++) moveParticle(activeParticles[i]);
+}
+
 void FluidSimulation::createParticle(vec2f pos, int numParticlesToSpawn){
+	//search for dead particles to reinit
 	std::list<Particle*> inactiveParticles;
 	int j = 0;
 	for(int i = 0; i < numParticlesToSpawn; ++i)
@@ -51,105 +182,30 @@ void FluidSimulation::createParticle(vec2f pos, int numParticlesToSpawn){
 				inactiveParticles.push_back(&liquid[j]);
 				break;
 			}
-
 	for(std::list<Particle*>::iterator it = inactiveParticles.begin(); it != inactiveParticles.end(); ++it) {
 		if (numActiveParticles < MAX_PARTICLES) {
-			vec2f jitter = vec2f(((double)rand()/(RAND_MAX))*0.1, ((double)rand()/(RAND_MAX))*0.1);
+			vec2f jitter = vec2f(((double)rand()/(RAND_MAX))*1, ((double)rand()/(RAND_MAX))*1);
+			//reinit particle
 			Particle* p = *it;
 			p->position = pos + jitter;
 			p->velocity = vec2f(0.0f);
 			p->alive = true;
 			p->ci = getGridX(p->position.x);
 			p->cj = getGridY(p->position.y);
-
+			p->neighborCount = 0;
 			// Create grid cell if necessary
 			if (grid.find(p->ci) == grid.end())
 				grid[p->ci] = std::map<int, std::list<int>>();
 			if (grid[p->ci].find(p->cj) == grid[p->ci].end())
 				grid[p->ci][p->cj] = std::list<int>();
 			grid[p->ci][p->cj].push_back(p->index);
-
+			//set as active
 			activeParticles[numActiveParticles] = p->index;
 			numActiveParticles++;
 		}
 	}
 }
 
-void FluidSimulation::applyLiquidConstraints() {
-	// Prepare simulation
-	for (int i = 0; i < numActiveParticles; i++) {
-		int index = activeParticles[i];
-		Particle* p = &liquid[index];
-		scaledPositions[index] = p->position * MULTIPLIER;
-		scaledVelocities[index] = p->velocity * MULTIPLIER;
-		delta[index] = vec2f(0.0f);
-		findNeighbors(p);
-	}
-
-	for (int i = 0; i < numActiveParticles; i++) {
-		int index = activeParticles[i];
-		Particle* pt = &liquid[index];
-		// Calculate pressure
-		float p = 0.0f;
-		float pnear = 0.0f;
-		for (int a = 0; a < pt->neighborCount; a++) {
-			vec2f relativePosition = scaledPositions[pt->neighbors[a]] - scaledPositions[index];
-			float distanceSq = relativePosition.length()*relativePosition.length();
-			if (distanceSq < IDEAL_RADIUS_SQ) {
-				pt->distances[a] = relativePosition.length();
-				if (pt->distances[a] < 0.001f) pt->distances[a] = IDEAL_RADIUS - 0.01f;
-				float oneminusq = 1.0f - (pt->distances[a]/IDEAL_RADIUS);
-				p = (p + oneminusq*oneminusq);
-				pnear = (pnear + oneminusq*oneminusq*oneminusq);
-			}
-			else pt->distances[a] = 500000000;
-		}
-		// Apply forces
-		float pressure = (p - 5.0f) / 2.0f; //normal pressure term
-		float presnear = pnear / 2.0f; //near particles term
-		vec2f change(0.0f);
-		for (int a = 0; a < pt->neighborCount; a++) {
-			vec2f relativePosition = scaledPositions[pt->neighbors[a]] - scaledPositions[index];
-			if (pt->distances[a] < IDEAL_RADIUS) {
-				float q = pt->distances[a] / IDEAL_RADIUS;
-				float oneminusq = 1.0f - q;
-				float factor = oneminusq * (pressure + presnear*oneminusq) / (2.0f * pt->distances[a]);
-				vec2f d = relativePosition * factor;
-				vec2f relativeVelocity = scaledVelocities[pt->neighbors[a]] - scaledVelocities[index];
-				factor = VISCOSITY * oneminusq * DT;
-				d -= relativeVelocity * factor;
-				delta[pt->neighbors[a]] += d;
-				change -= d;
-			}
-		}
-		delta[index] += change;
-	}
-	// Move particles
-	for (int i = 0; i < numActiveParticles; i++) {
-		int index = activeParticles[i];
-		Particle* p = &liquid[index];
-		p->position += delta[index] / MULTIPLIER;
-		p->velocity += delta[index] / (MULTIPLIER * DT);
-		int x = getGridX(p->position.x);
-		int y = getGridY(p->position.y);
-		if (p->ci == x && p->cj == y)
-			continue;
-		else {
-			grid[p->ci][p->cj].remove(index);
-			if (grid[p->ci][p->cj].size() == 0) {
-				grid[p->ci].erase(p->cj);
-				if(grid[p->ci].size() == 0)	grid.erase(p->ci);
-			}
-			if (grid.find(x) == grid.end())
-				grid[x] = std::map<int, std::list<int>>();
-			if (grid[x].find(y) == grid[x].end())
-				grid[x][y] = std::list<int>();
-			grid[x][y].push_back(index);
-			p->ci = x;
-			p->cj = y;
-		}
-	}
-}
 void FluidSimulation::findNeighbors(Particle* particle) {
 	particle->neighborCount = 0;
 	std::map<int, std::map<int, std::list<int>>>::iterator gridX;
@@ -177,8 +233,18 @@ void FluidSimulation::findNeighbors(Particle* particle) {
 Particle::Particle(vec2f position, vec2f velocity, bool alive) :
 	position(position),
 	velocity(velocity),
-	alive(alive) {
+	alive(alive),
+	neighborCount(0.0f),
+	p(0.0f),
+	pnear(0.0f) {
+	neighbors = new int[MAX_NEIGHBORS];
+	distances = new float[MAX_NEIGHBORS];
+	neighborsDelta = new vec2f[MAX_NEIGHBORS];
+	for(int i = 0; i < MAX_NEIGHBORS; ++i) {neighbors[i] = 0; distances[i] = 0.0f; neighborsDelta[i] = vec2f(0.0f);}
 }
 
 Particle::~Particle() {
+	delete neighbors;
+	delete distances;
+	delete neighborsDelta;
 }

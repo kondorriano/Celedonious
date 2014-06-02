@@ -37,11 +37,12 @@ void PhysicsEngine::draw(const PhysicsDebugDrawer* drawer) {
 	world->DrawDebugData();
 }
 
-void PhysicsEngine::drawGrid(const PhysicsDebugDrawer* drawer) {
-	for(int i = -10; i <= 10; ++i) {
-		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(-10, i), vec2f(10, i), vec3f(1.0f));
-		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(i, 10), vec2f(i, -10), vec3f(1.0f));
-	}
+void PhysicsEngine::drawGrid(const PhysicsDebugDrawer* drawer, vec2f min, vec2f max, float step, vec4f color) {
+	VBE_ASSERT(step > 0, "DrawGrid()'s step can't be 0 or less");
+	for(float i = min.x; i <= max.x; i += step)
+		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(min.y, i), vec2f(max.y, i), color);
+	for(float i = min.y; i <= max.y; i += step)
+		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(i, min.x), vec2f(i, max.x), color);
 }
 
 b2Body* PhysicsEngine::createBody() {

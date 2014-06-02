@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     SceneMain/physics/PolygonCollider.cpp \
     SceneMain/Level.cpp \
     SceneMain/DebugDrawer.cpp \
-    SceneMain/FluidSimulation.cpp
+    SceneMain/FluidSimulation.cpp \
+    SceneMain/TaskPool.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -35,7 +36,8 @@ HEADERS += \
     SceneMain/Level.hpp \
     SceneMain/physics/PhysicsDebugDrawer.hpp \
     SceneMain/DebugDrawer.hpp \
-    SceneMain/FluidSimulation.hpp
+    SceneMain/FluidSimulation.hpp \
+    SceneMain/TaskPool.hpp
 
 OTHER_FILES += \
 	data/shaders/light.frag \

@@ -14,17 +14,19 @@ Player::~Player() {
 }
 
 void Player::update(float deltaTime) {
-	float vel = 10.0f;
+	float vel = 30.0f;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::W)) pos.y += vel*deltaTime;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::A)) pos.x -= vel*deltaTime;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) pos.z -= vel*deltaTime;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::S)) pos.y -= vel*deltaTime;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::D)) pos.x += vel*deltaTime;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::LShift)) pos.z += vel*deltaTime;
 	transform = glm::translate(mat4f(1.0f),pos);
 }
 
 void Player::draw() const {
 	if(renderer->getMode() != DeferredContainer::Deferred) return;
-	model.program->uniform("MVP")->set(cam->projection*cam->getView()*fullTransform);
+	model.program->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(fullTransform, vec3f(0.1f)));
 	model.program->uniform("M")->set(fullTransform);
 	model.program->uniform("V")->set(cam->getView());
 	model.program->uniform("ambient")->set(0.5f);
