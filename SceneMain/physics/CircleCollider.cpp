@@ -32,6 +32,13 @@ void CircleCollider::setSensor(bool sensor) {
 	pBody->ResetMassData();
 }
 
+AABB CircleCollider::getAABB() const {
+	b2AABB aabb;
+	b2Transform trans = fixture->GetBody()->GetTransform();
+	shape.ComputeAABB(&aabb, trans, 0);
+	return AABB(vec3f(aabb.lowerBound.x, aabb.lowerBound.y, 0), vec3f(aabb.upperBound.x, aabb.upperBound.y, 0));
+}
+
 void CircleCollider::setRadius(float r) {
 	shape.m_radius = r;
 	remake();

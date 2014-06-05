@@ -11,6 +11,7 @@ class CircleCollider : public Collider {
 		void setFriction(float friction);
 		void setRestitution(float restitution);
 		void setSensor(bool sensor);
+		AABB getAABB() const;
 
 		void setRadius(float r);
 

@@ -32,6 +32,13 @@ void PolygonCollider::setSensor(bool sensor) {
 	pBody->ResetMassData();
 }
 
+AABB PolygonCollider::getAABB() const {
+	b2AABB aabb;
+	b2Transform trans = fixture->GetBody()->GetTransform();
+	shape.ComputeAABB(&aabb, trans, 0);
+	return AABB(vec3f(aabb.lowerBound.x, aabb.lowerBound.y, 0), vec3f(aabb.upperBound.x, aabb.upperBound.y, 0));
+}
+
 void PolygonCollider::remake() {
 	if(fixture != nullptr) pBody->DestroyFixture(fixture);
 	b2FixtureDef d;

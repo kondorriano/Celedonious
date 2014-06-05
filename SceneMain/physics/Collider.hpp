@@ -30,6 +30,7 @@ class Collider {
 		void applyLinearImpulse(const vec2f &i, const vec2f &p);
 		void applyAngularImpulse(float impulse);
 
+		virtual AABB getAABB() const = 0;
 		float getFriction() const {return friction;}
 		virtual void setFriction(float friction) = 0;
 		float getRestitution() const {return restitution;}
@@ -71,6 +72,7 @@ class Collider {
 		b2BodyType DTypeToB2Type(DType t) const;
 
 		b2Body* pBody;
+		AABB aabb;
 
 		float friction;
 		float restitution;

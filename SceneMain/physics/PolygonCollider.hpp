@@ -11,6 +11,7 @@ class PolygonCollider : public Collider {
 		void setFriction(float friction);
 		void setRestitution(float restitution);
 		void setSensor(bool sensor);
+		AABB getAABB() const;
 
 		void setAsBox(float hx, float hy);
 		void setAsBox(float hx, float hy, const vec2f& center, float angle);

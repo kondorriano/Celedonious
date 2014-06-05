@@ -10,10 +10,10 @@ class PhysicsBody : public GameObject {
 
 		virtual void update(float deltaTime) {(void) deltaTime;}
 		virtual void draw() const {}
+		Collider* getCollider() const {return collider;}
 
 	protected:
 		void setCollider(Collider* newCollider);
-		Collider* getCollider() const {return collider;}
 
 		virtual void onCollisionEnter(PhysicsBody* other) {(void) other;}
 		virtual void onCollisionExit(PhysicsBody* other) {(void) other;}

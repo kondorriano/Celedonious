@@ -6,6 +6,7 @@ float PhysicsEngine::timestep = 0.0f;
 int PhysicsEngine::velocityIterations = 0;
 int PhysicsEngine::positionIterations = 0;
 float PhysicsEngine::accumulated = 0.0f;
+PhysicsEngine::PECallback PhysicsEngine::queryCallback;
 
 void PhysicsEngine::init(vec2f gravity, float step, int velIters, int posIters) {
 	VBE_ASSERT(world == nullptr, "Trying to init an already init physics simulation");
@@ -45,6 +46,14 @@ void PhysicsEngine::drawGrid(const PhysicsDebugDrawer* drawer, vec2f min, vec2f 
 		((PhysicsDebugDrawer*)drawer)->drawSegment(vec2f(i, min.x), vec2f(i, max.x), color);
 }
 
+void PhysicsEngine::queryAABB(PhysicsQueryCallback* callback, AABB aabb) {
+	b2AABB b2aabb;
+	b2aabb.lowerBound = b2Vec2(aabb.getMin().x, aabb.getMin().y);
+	b2aabb.upperBound = b2Vec2(aabb.getMax().x, aabb.getMax().y);
+	queryCallback.reset(callback);
+	world->QueryAABB(&queryCallback, b2aabb);
+}
+
 b2Body* PhysicsEngine::createBody() {
 	VBE_ASSERT(world != nullptr, "Trying to add collider to an not-init physics simulation");
 	b2BodyDef b;
@@ -54,4 +63,29 @@ b2Body* PhysicsEngine::createBody() {
 void PhysicsEngine::deleteBody(b2Body* body) {
 	VBE_ASSERT(world != nullptr, "Trying to remove collider from an not-init physics simulation");
 	world->DestroyBody(body);
+}
+
+PhysicsEngine::PECallback::PECallback() {
+}
+
+PhysicsEngine::PECallback::~PECallback() {
+}
+
+bool PhysicsEngine::PECallback::ReportFixture(b2Fixture* fixture) {
+	PhysicsBody* bodyPointer = (PhysicsBody*) fixture->GetBody()->GetUserData();
+	VBE_WARN((bodyPointer != nullptr), "An orphan collider has showed up on an AABB query. Orphaned colliders cannot be queried on AABB queries");
+	if(bodyPointer == nullptr || visited.find(bodyPointer) != visited.end()) return true;
+	visited.insert(bodyPointer);
+	return callback->reportBody(bodyPointer);
+}
+
+void PhysicsEngine::PECallback::reset(PhysicsQueryCallback* newCallback) {
+	callback = newCallback;
+	visited.clear();
+}
+
+PhysicsQueryCallback::PhysicsQueryCallback(){
+}
+
+PhysicsQueryCallback::~PhysicsQueryCallback(){
 }

@@ -1,5 +1,7 @@
 #include "FluidSimulation.hpp"
 #include "DeferredContainer.hpp"
+#include "physics/PhysicsBody.hpp"
+
 constexpr int FluidSimulation::MAX_PARTICLES;
 constexpr float FluidSimulation::RADIUS;
 constexpr float FluidSimulation::VISCOSITY;
@@ -32,18 +34,17 @@ FluidSimulation::FluidSimulation() : TaskPool(WORKER_THREADS, [](){/*init functi
 		scaledPositions[i] = vec2f(0.0f);
 		scaledVelocities[i] = vec2f(0.0f);
 	}
-	Log::message()
-			<< "FLUID SIMULATION INFO" << Log::Line
-			<< "=====================" << Log::Line
-			<< "DT: " << DT << Log::Line
-			<< "MAX_PARTICLES: " << MAX_PARTICLES << Log::Line
-			<< "RADIUS: " << RADIUS << Log::Line
-			<< "VISCOSITY: " << VISCOSITY << Log::Line
-			<< "IDEAL_RADIUS: " << IDEAL_RADIUS << Log::Line
-			<< "IDEAL_RADIUS_SQ: " << IDEAL_RADIUS_SQ << Log::Line
-			<< "MULTIPLIER: " << MULTIPLIER << Log::Line
-			<< "CELL_SIZE: " << CELL_SIZE << Log::Line
-			<< "WORKER_THREADS: " << WORKER_THREADS << Log::Flush;
+	VBE_LOG(   "FLUID SIMULATION INFO" << Log::Line
+			   << "=====================" << Log::Line
+			   << "DT: " << DT << Log::Line
+			   << "MAX_PARTICLES: " << MAX_PARTICLES << Log::Line
+			   << "RADIUS: " << RADIUS << Log::Line
+			   << "VISCOSITY: " << VISCOSITY << Log::Line
+			   << "IDEAL_RADIUS: " << IDEAL_RADIUS << Log::Line
+			   << "IDEAL_RADIUS_SQ: " << IDEAL_RADIUS_SQ << Log::Line
+			   << "MULTIPLIER: " << MULTIPLIER << Log::Line
+			   << "CELL_SIZE: " << CELL_SIZE << Log::Line
+			   << "WORKER_THREADS: " << WORKER_THREADS);
 }
 
 FluidSimulation::~FluidSimulation() {
@@ -51,7 +52,7 @@ FluidSimulation::~FluidSimulation() {
 
 void FluidSimulation::update(float deltaTime) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) createParticle(vec2f(cam->getWorldPos().x, cam->getWorldPos().y), 1);
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) {createParticle(vec2f(cam->getWorldPos().x, cam->getWorldPos().y), 10);}
 	accumulatedTime += deltaTime;
 	while(accumulatedTime >= DT) {
 		applyLiquidConstraints();
@@ -72,6 +73,80 @@ void FluidSimulation::draw() const {
 	m.draw();
 }
 
+void FluidSimulation::createParticle(vec2f pos, int numParticlesToSpawn){
+	//search for dead particles to reinit
+	std::list<Particle*> inactiveParticles;
+	for(int j = 0;j < MAX_PARTICLES && int(inactiveParticles.size()) <=  numParticlesToSpawn; ++j)
+		if(liquid[j].alive == false)
+			inactiveParticles.push_back(&liquid[j]);
+	for(std::list<Particle*>::iterator it = inactiveParticles.begin(); it != inactiveParticles.end(); ++it) {
+		if (numActiveParticles < MAX_PARTICLES) {
+			vec2f jitter = vec2f(((double)rand()/(RAND_MAX))*numParticlesToSpawn*0.5, ((double)rand()/(RAND_MAX))*numParticlesToSpawn*0.5);
+			//reinit particle
+			Particle* p = *it;
+			p->position = pos + jitter;
+			p->velocity = vec2f(0.0f,.1f);
+			p->alive = true;
+			p->ci = getGridX(p->position.x);
+			p->cj = getGridY(p->position.y);
+			p->neighborCount = 0;
+			// Create grid cell if necessary
+			if (grid.find(p->ci) == grid.end())
+				grid[p->ci] = std::map<int, std::list<int>>();
+			if (grid[p->ci].find(p->cj) == grid[p->ci].end())
+				grid[p->ci][p->cj] = std::list<int>();
+			grid[p->ci][p->cj].push_back(p->index);
+			//set as active
+			activeParticles[numActiveParticles] = p->index;
+			numActiveParticles++;
+		}
+	}
+}
+
+void FluidSimulation::applyLiquidConstraints() {
+	//PARALLEL
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {prepareSimulation(activeParticles[i]);});
+	wait(); //wait for all parallel jobs to end
+	prepareCollisions();
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculatePressure(activeParticles[i]);});
+	wait();
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculateForce(activeParticles[i]);});
+	wait();
+	//NOT PARALLEL
+	for (int i = 0; i < numActiveParticles; i++) moveParticle(activeParticles[i]);
+}
+
+bool FluidSimulation::reportBody(PhysicsBody* body)  {
+	AABB aabb = body->getCollider()->getAABB();
+	// Get the top left corner of the AABB in grid coordinates
+	int Ax = getGridX(aabb.getMax().x);
+	int Ay = getGridY(aabb.getMin().y);
+
+	// Get the bottom right corner of the AABB in grid coordinates
+	int Bx = getGridX(aabb.getMax().x) + 1;
+	int By = getGridY(aabb.getMax().y) + 1;
+	// Loop through all the grid cells in the fixture's AABB
+	for (int x = Ax; x < Bx; x++) {
+		for (int y = Ay; y < By; y++) {
+			if (grid.find(x) != grid.end() && grid[x].find(y) != grid[x].end()) {
+				// Tell any particles we find that this fixture should be tested
+				for (std::list<int>::iterator k = grid[x][y].begin(); k != grid[x][y].end(); k++) {
+					Particle* particle = &liquid[*k];
+					if (particle->numFixturesToTest < Particle::MAX_FIXTURES_TO_TEST) {
+						particle->fixturesToTest[particle->numFixturesToTest] = body;
+						particle->numFixturesToTest++;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+void FluidSimulation::prepareCollisions()  {
+	PhysicsEngine::queryAABB(this, simulationAABB);
+}
+
 void FluidSimulation::prepareSimulation(int index) {
 	Particle* particle = &liquid[index];
 	// Find neighbors
@@ -86,6 +161,7 @@ void FluidSimulation::prepareSimulation(int index) {
 	//Reset pressures
 	particle->p = 0.0f;
 	particle->pnear = 0.0f;
+	particle->numFixturesToTest = 0;
 }
 
 void FluidSimulation::calculatePressure(int index) {
@@ -128,7 +204,7 @@ void FluidSimulation::calculateForce(int index) {
 	for (int j = 0; j < particle->neighborCount; j++)
 		delta[particle->neighbors[j]] += particle->neighborsDelta[j] / MULTIPLIER;
 	delta[index] += change / MULTIPLIER;
-	particle->velocity += vec2f(0.0f, -9.8f) / 3000.0f;
+	particle->velocity += vec2f(0.0f, -9.8f/50.0f)*DT;
 	lock.unlock();
 }
 
@@ -160,64 +236,14 @@ void FluidSimulation::moveParticle(int index) {
 	particle->cj = y;
 }
 
-void FluidSimulation::applyLiquidConstraints() {
-	//PARALLEL
-	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {prepareSimulation(activeParticles[i]);});
-	wait(); //wait for all parallel jobs to end
-	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculatePressure(activeParticles[i]);});
-	wait();
-	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculateForce(activeParticles[i]);});
-	wait();
-	//NOT PARALLEL
-	for (int i = 0; i < numActiveParticles; i++) moveParticle(activeParticles[i]);
-}
-
-void FluidSimulation::createParticle(vec2f pos, int numParticlesToSpawn){
-	//search for dead particles to reinit
-	std::list<Particle*> inactiveParticles;
-	int j = 0;
-	for(int i = 0; i < numParticlesToSpawn; ++i)
-		for(;j < MAX_PARTICLES; ++j)
-			if(liquid[j].alive == false) {
-				inactiveParticles.push_back(&liquid[j]);
-				break;
-			}
-	for(std::list<Particle*>::iterator it = inactiveParticles.begin(); it != inactiveParticles.end(); ++it) {
-		if (numActiveParticles < MAX_PARTICLES) {
-			vec2f jitter = vec2f(((double)rand()/(RAND_MAX))*1, ((double)rand()/(RAND_MAX))*1);
-			//reinit particle
-			Particle* p = *it;
-			p->position = pos + jitter;
-			p->velocity = vec2f(0.0f);
-			p->alive = true;
-			p->ci = getGridX(p->position.x);
-			p->cj = getGridY(p->position.y);
-			p->neighborCount = 0;
-			// Create grid cell if necessary
-			if (grid.find(p->ci) == grid.end())
-				grid[p->ci] = std::map<int, std::list<int>>();
-			if (grid[p->ci].find(p->cj) == grid[p->ci].end())
-				grid[p->ci][p->cj] = std::list<int>();
-			grid[p->ci][p->cj].push_back(p->index);
-			//set as active
-			activeParticles[numActiveParticles] = p->index;
-			numActiveParticles++;
-		}
-	}
-}
-
 void FluidSimulation::findNeighbors(Particle* particle) {
 	particle->neighborCount = 0;
-	std::map<int, std::map<int, std::list<int>>>::iterator gridX;
-	std::map<int, std::list<int>>::iterator gridY;
 	for (int nx = -1; nx < 2; nx++) {
 		for (int ny = -1; ny < 2; ny++) {
 			int x = particle->ci + nx;
 			int y = particle->cj + ny;
-			gridX = grid.find(x);
-			gridY = (gridX == grid.end())? gridY : gridX->second.find(y);
-			if (gridX != grid.end() && gridY != gridX->second.end()) {
-				for (std::list<int>::iterator it = gridY->second.begin(); it != gridY->second.end(); ++it) {
+			if (grid.find(x) != grid.end() && grid[x].find(y) != grid[x].end()) {
+				for (std::list<int>::iterator it = grid[x][y].begin(); it != grid[x][y].end(); ++it) {
 					if (*it != particle->index) {
 						particle->neighbors[particle->neighborCount] = *it;
 						particle->neighborCount++;
@@ -240,6 +266,7 @@ Particle::Particle(vec2f position, vec2f velocity, bool alive) :
 	neighbors = new int[MAX_NEIGHBORS];
 	distances = new float[MAX_NEIGHBORS];
 	neighborsDelta = new vec2f[MAX_NEIGHBORS];
+	fixturesToTest = new PhysicsBody*[MAX_FIXTURES_TO_TEST];
 	for(int i = 0; i < MAX_NEIGHBORS; ++i) {neighbors[i] = 0; distances[i] = 0.0f; neighborsDelta[i] = vec2f(0.0f);}
 }
 
