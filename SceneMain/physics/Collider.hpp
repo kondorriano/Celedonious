@@ -72,7 +72,6 @@ class Collider {
 		b2BodyType DTypeToB2Type(DType t) const;
 
 		b2Body* pBody;
-		AABB aabb;
 
 		float friction;
 		float restitution;
