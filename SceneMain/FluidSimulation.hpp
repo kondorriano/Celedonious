@@ -19,6 +19,8 @@ class Particle {
 		float* distances;
 		int* neighbors;
 		vec2f* neighborsDelta;
+		vec2f* collisionVertices;
+		vec2f* collisionNormals;
 		PhysicsBody** fixturesToTest;
 		int neighborCount;
 		int numFixturesToTest;
@@ -59,6 +61,7 @@ class FluidSimulation : public GameObject, public TaskPool, public PhysicsQueryC
 		void prepareSimulation(int index);
 		void calculatePressure(int index);
 		void calculateForce(int index);
+		void resolveCollision(int index);
 		void moveParticle(int index);
 		void findNeighbors(Particle* particle);
 

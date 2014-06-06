@@ -2,7 +2,7 @@
 #include "PhysicsEngine.hpp"
 #include "PhysicsBody.hpp"
 
-Collider::Collider() : pBody(nullptr), friction(0.1f), restitution(0.25f), density(1.0f), sensor(false) {
+Collider::Collider() : pBody(nullptr), fixture(nullptr), shape(nullptr), friction(0.1f), restitution(0.25f), density(1.0f), sensor(false) {
 	pBody = PhysicsEngine::createBody();
 	pBody->SetUserData(nullptr);
 	setActive(true);
@@ -21,11 +21,24 @@ Collider::Collider() : pBody(nullptr), friction(0.1f), restitution(0.25f), densi
 Collider::~Collider() {
 	PhysicsEngine::deleteBody(pBody);
 	pBody = nullptr;
+	if(shape != nullptr) delete shape;
 }
 
 void Collider::init(PhysicsBody* pb) {
 	VBE_ASSERT(pBody->GetUserData() == nullptr, "Trying to assign a collider to a physics object, but this collider was already assigned to some other object. Create a new collider instead.");
 	pBody->SetUserData(pb);
+}
+
+void Collider::remake() {
+	if(fixture != nullptr) pBody->DestroyFixture(fixture);
+	b2FixtureDef d;
+	d.shape = shape;
+	d.density = density;
+	d.friction = friction;
+	d.isSensor = sensor;
+	d.restitution = restitution;
+	fixture = pBody->CreateFixture(&d);
+	pBody->ResetMassData();
 }
 
 void Collider::applyForce(const vec2f& f, const vec2f& p) {
@@ -47,6 +60,44 @@ void Collider::applyLinearImpulse(const vec2f& i, const vec2f& p) {
 void Collider::applyAngularImpulse(float impulse) {
 	pBody->ApplyAngularImpulse(impulse, true);
 }
+
+bool Collider::testPoint(vec2f point) {
+	if(fixture == nullptr) return false;
+	return fixture->TestPoint(Utils::GLMv2ToB2Dv2(point));
+}
+
+AABB Collider::getAABB() const {
+	if(fixture == nullptr) return AABB();
+	b2AABB aabb;
+	b2Transform trans = fixture->GetBody()->GetTransform();
+	shape->ComputeAABB(&aabb, trans, 0);
+	return AABB(vec3f(aabb.lowerBound.x, aabb.lowerBound.y, 0), vec3f(aabb.upperBound.x, aabb.upperBound.y, 0));
+}
+
+void Collider::setDensity(float density) {
+	this->density = density;
+	if(fixture != nullptr) fixture->SetDensity(density);
+	pBody->ResetMassData();
+}
+
+void Collider::setFriction(float friction) {
+	this->friction = friction;
+	if(fixture != nullptr) fixture->SetFriction(friction);
+	pBody->ResetMassData();
+}
+
+void Collider::setRestitution(float restitution) {
+	this->restitution = restitution;
+	if(fixture != nullptr) fixture->SetRestitution(restitution);
+	pBody->ResetMassData();
+}
+
+void Collider::setSensor(bool sensor) {
+	this->sensor = sensor;
+	if(fixture != nullptr) fixture->SetSensor(sensor);
+	pBody->ResetMassData();
+}
+
 
 vec2f Collider::getCenterOfMass() const {
 	return Utils::B2Dv2ToGLMv2(pBody->GetWorldCenter());

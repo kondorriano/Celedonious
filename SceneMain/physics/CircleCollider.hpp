@@ -7,21 +7,11 @@ class CircleCollider : public Collider {
 		CircleCollider();
 		~CircleCollider();
 
-		void setDensity(float density);
-		void setFriction(float friction);
-		void setRestitution(float restitution);
-		void setSensor(bool sensor);
-		AABB getAABB() const;
-
+		float getRadius();
 		void setRadius(float r);
 
 		int getVertexCount() const;
 		vec2f getVertex(int index) const;
-	private:
-		void remake();
-
-		b2CircleShape shape;
-		b2Fixture* fixture;
 };
 
 #endif // CIRCLECOLLIDER_HPP

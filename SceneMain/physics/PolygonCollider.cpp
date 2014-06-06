@@ -1,71 +1,35 @@
 #include "PolygonCollider.hpp"
 #include "PhysicsEngine.hpp"
 
-PolygonCollider::PolygonCollider() : fixture(nullptr) {
+PolygonCollider::PolygonCollider() {
+	shape = new b2PolygonShape();
+	type = Polygon;
 	setAsBox(1.0,1.0);
 }
 
 PolygonCollider::~PolygonCollider(){
 }
 
-void PolygonCollider::setDensity(float density) {
-	this->density = density;
-	if(fixture != nullptr) fixture->SetDensity(density);
-	pBody->ResetMassData();
-}
-
-void PolygonCollider::setFriction(float friction) {
-	this->friction = friction;
-	if(fixture != nullptr) fixture->SetFriction(friction);
-	pBody->ResetMassData();
-}
-
-void PolygonCollider::setRestitution(float restitution) {
-	this->restitution = restitution;
-	if(fixture != nullptr) fixture->SetRestitution(restitution);
-	pBody->ResetMassData();
-}
-
-void PolygonCollider::setSensor(bool sensor) {
-	this->sensor = sensor;
-	if(fixture != nullptr) fixture->SetSensor(sensor);
-	pBody->ResetMassData();
-}
-
-AABB PolygonCollider::getAABB() const {
-	b2AABB aabb;
-	b2Transform trans = fixture->GetBody()->GetTransform();
-	shape.ComputeAABB(&aabb, trans, 0);
-	return AABB(vec3f(aabb.lowerBound.x, aabb.lowerBound.y, 0), vec3f(aabb.upperBound.x, aabb.upperBound.y, 0));
-}
-
-void PolygonCollider::remake() {
-	if(fixture != nullptr) pBody->DestroyFixture(fixture);
-	b2FixtureDef d;
-	d.shape = &shape;
-	d.density = density;
-	d.friction = friction;
-	d.isSensor = sensor;
-	d.restitution = restitution;
-	fixture = pBody->CreateFixture(&d);
-	pBody->ResetMassData();
-}
-
 void PolygonCollider::setAsBox(float hx, float hy){
-	shape.SetAsBox(hx, hy);
+	((b2PolygonShape*)shape)->SetAsBox(hx, hy);
 	remake();
 }
 
 void PolygonCollider::setAsBox(float hx, float hy, const vec2f& center, float angle){
-	shape.SetAsBox(hx, hy, Utils::GLMv2ToB2Dv2(center), angle);
+	((b2PolygonShape*)shape)->SetAsBox(hx, hy, Utils::GLMv2ToB2Dv2(center), angle);
 	remake();
 }
 
 int PolygonCollider::getVertexCount() const {
-	return shape.GetVertexCount();
+	return ((b2PolygonShape*)shape)->GetVertexCount();
 }
 
-vec2f PolygonCollider::getVertex(int index) const {
+vec2f PolygonCollider::getLocalVertex(int index) const {
 	VBE_ASSERT(index < getVertexCount(), "Polygon Vertex: index out of bounds");
-	return Utils::B2Dv2ToGLMv2(shape.GetVertex(index));
+	return Utils::B2Dv2ToGLMv2(((b2PolygonShape*)shape)->GetVertex(index));
+}
+
+vec2f PolygonCollider::getWorldVertex(int index) const {
+	VBE_ASSERT(index < getVertexCount(), "Polygon Vertex: index out of bounds");
+	return Utils::B2Dv2ToGLMv2(pBody->GetWorldPoint(((b2PolygonShape*)shape)->GetVertex(index)));
 }

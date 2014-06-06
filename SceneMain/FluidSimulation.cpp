@@ -1,6 +1,8 @@
 #include "FluidSimulation.hpp"
 #include "DeferredContainer.hpp"
 #include "physics/PhysicsBody.hpp"
+#include "physics/PolygonCollider.hpp"
+#include "physics/CircleCollider.hpp"
 
 constexpr int FluidSimulation::MAX_PARTICLES;
 constexpr float FluidSimulation::RADIUS;
@@ -112,6 +114,8 @@ void FluidSimulation::applyLiquidConstraints() {
 	wait();
 	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {calculateForce(activeParticles[i]);});
 	wait();
+	for (int i = 0; i < numActiveParticles; i++) enqueue([this, i]() {resolveCollision(activeParticles[i]);});
+	wait();
 	//NOT PARALLEL
 	for (int i = 0; i < numActiveParticles; i++) moveParticle(activeParticles[i]);
 }
@@ -208,6 +212,69 @@ void FluidSimulation::calculateForce(int index) {
 	lock.unlock();
 }
 
+void FluidSimulation::resolveCollision(int index) {
+	Particle* particle = &liquid[index];
+
+	// Test all fixtures stored in this particle
+	for (int i = 0; i < particle->numFixturesToTest; i++) {
+		Collider* fixture = particle->fixturesToTest[i]->getCollider();
+
+		// Determine where the particle will be after being moved
+		vec2f newPosition = particle->position + particle->velocity + delta[index];
+
+		// Test to see if the new particle position is inside the fixture
+		if (fixture->testPoint(newPosition)) {
+			vec2f closestPoint(0.0f);
+			vec2f normal(0.0f);
+
+			// Resolve collisions differently based on what type of shape they are
+			if (fixture->getCType() == Collider::Polygon) {
+				PolygonCollider* poly = (PolygonCollider*) fixture;
+				for (int v = 0; v < poly->getVertexCount(); v++) {
+					// Transform the shape's vertices from local space to world space
+					particle->collisionVertices[v] = poly->getWorldVertex(i);
+
+					// Transform the shape's normals using the rotation matrix
+					particle->collisionNormals[v] = MathUtils.Multiply(collisionXF.R, poly->normals[v]);
+				}
+
+				// Find closest edge
+				float shortestDistance = 9999999.0f;
+				for (int v = 0; v < poly->getVertexCount(); v++) {
+					// Project the vertex position relative to the particle position onto the edge's normal to find the distance
+					float distance = glm::dot(particle->collisionNormals[v], particle->collisionVertices[v] - particle->position);
+					if (distance < shortestDistance) {
+						// Store the shortest distance
+						shortestDistance = distance;
+
+						// Push the particle out of the shape in the direction of the closest edge's normal
+						closestPoint = particle->collisionNormals[v] * (distance) + particle->position;
+						normal = particle->collisionNormals[v];
+					}
+				}
+				particle->position = closestPoint + 0.05f * normal;
+			}
+			else if (fixture->getCType() == Collider::Circle) {
+				// Push the particle out of the circle by normalizing the circle's center relative to the particle position,
+				// and pushing the particle out in the direction of the normal
+				CircleCollider* circle = (CircleCollider*) fixture;
+				vec2f center = circle->getPosition();
+				vec2f difference = particle->position - center;
+				normal = difference;
+				normal = glm::normalize(normal);
+				closestPoint = center + difference * (circle->getRadius() / glm::length(difference));
+				particle->position = closestPoint + 0.05f * normal;
+			}
+
+			// Update velocity
+			particle->velocity = (particle->velocity - 1.2f * glm::dot(particle->velocity, normal) * normal) * 0.85f;
+
+			// Reset delta
+			delta[index] = vec2f(0.0f);
+		}
+	}
+}
+
 void FluidSimulation::moveParticle(int index) {
 	Particle* particle = &liquid[index];
 	//apply delta// Update velocity
@@ -263,6 +330,8 @@ Particle::Particle(vec2f position, vec2f velocity, bool alive) :
 	neighborCount(0.0f),
 	p(0.0f),
 	pnear(0.0f) {
+	collisionNormals = new vec2f[b2_maxPolygonVertices];
+	collisionVertices = new vec2f[b2_maxPolygonVertices];
 	neighbors = new int[MAX_NEIGHBORS];
 	distances = new float[MAX_NEIGHBORS];
 	neighborsDelta = new vec2f[MAX_NEIGHBORS];

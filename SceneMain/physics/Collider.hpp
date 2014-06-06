@@ -18,7 +18,8 @@ class Collider {
 			Circle = b2Shape::e_circle,
 			Polygon = b2Shape::e_polygon,
 			Edge = b2Shape::e_edge,
-			Chain = b2Shape::e_chain
+			Chain = b2Shape::e_chain,
+			Undefined = -1
 		};
 
 		Collider();
@@ -30,15 +31,18 @@ class Collider {
 		void applyLinearImpulse(const vec2f &i, const vec2f &p);
 		void applyAngularImpulse(float impulse);
 
-		virtual AABB getAABB() const = 0;
+		bool testPoint(vec2f point);
+
+		CType getCType() {return type;}
+		AABB getAABB() const;
 		float getFriction() const {return friction;}
-		virtual void setFriction(float friction) = 0;
+		void setFriction(float friction);
 		float getRestitution() const {return restitution;}
-		virtual void setRestitution(float restitution) = 0;
+		void setRestitution(float restitution);
 		float getDensity() const {return density;}
-		virtual void setDensity(float density) = 0;
+		void setDensity(float density);
 		bool isSensor() const {return sensor;}
-		virtual void setSensor(bool isSensor) = 0;
+		void setSensor(bool isSensor);
 		vec2f getCenterOfMass() const;
 		vec2f getPosition() const;
 		void setPosition(vec2f pos);
@@ -68,10 +72,14 @@ class Collider {
 
 	protected:
 		void init(PhysicsBody* pb);
+		void remake();
 		DType B2TypeToDType(b2BodyType t) const;
 		b2BodyType DTypeToB2Type(DType t) const;
 
 		b2Body* pBody;
+		b2Fixture* fixture;
+		b2Shape* shape;
+		CType type;
 
 		float friction;
 		float restitution;
