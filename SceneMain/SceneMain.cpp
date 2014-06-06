@@ -9,6 +9,7 @@
 #include "FluidSimulation.hpp"
 #include "physics/PhysicsEngine.hpp"
 #include "physics/PolygonCollider.hpp"
+#include "physics/CircleCollider.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
@@ -55,7 +56,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	p = new PolygonCollider();
 	p->setAsBox(1.0f,10.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(-5.0f,0.0f));
+	p->setPosition(vec2f(-5.0f,10.0f));
 	b->set(p);
 	b->addTo(renderer);
 
@@ -63,7 +64,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	p = new PolygonCollider();
 	p->setAsBox(1.0f,10.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(5.0f,0.0f));
+	p->setPosition(vec2f(5.0f,10.0f));
 	b->set(p);
 	b->addTo(renderer);
 
@@ -126,5 +127,15 @@ void SceneMain::update(float deltaTime) {
 		VBE_LOG("FPS: " << fpsCount);
 		debugCounter--;
 		fpsCount = 0;
+	}
+	if(Environment::getMouse()->isButtonPressed(Mouse::Left)) {
+		Camera* cam = (Camera*)getGame()->getObjectByName("playerCam");
+		GenericBody* b = new GenericBody();
+		CircleCollider* p = new CircleCollider();
+		p->setRadius(3.0f);
+		p->setDType(Collider::Dynamic);
+		p->setPosition(vec2f(cam->getWorldPos().x, cam->getWorldPos().y));
+		b->set(p);
+		b->addTo(this);
 	}
 }

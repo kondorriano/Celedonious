@@ -33,10 +33,10 @@ class Particle {
 class DeferredContainer;
 class FluidSimulation : public GameObject, public TaskPool, public PhysicsQueryCallback {
 	public:
-		static constexpr int MAX_PARTICLES = 1000;
+		static constexpr int MAX_PARTICLES = 2000;
 		static constexpr float RADIUS = 0.9f;
-		static constexpr float VISCOSITY = 0.0004f;
-		static constexpr float DT = 1.0f / 30.0f;
+		static constexpr float VISCOSITY = 0.00001f;
+		static constexpr float DT = 1.0f / 60.0f;
 		static constexpr float IDEAL_RADIUS = 50.0f;
 		static constexpr float IDEAL_RADIUS_SQ = IDEAL_RADIUS*IDEAL_RADIUS;
 		static constexpr float MULTIPLIER = IDEAL_RADIUS/RADIUS;

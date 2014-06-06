@@ -206,7 +206,7 @@ void FluidSimulation::calculateForce(int index) {
 	for (int j = 0; j < particle->neighborCount; j++)
 		delta[particle->neighbors[j]] += particle->neighborsDelta[j] / MULTIPLIER;
 	delta[index] += change / MULTIPLIER;
-	particle->velocity += vec2f(0.0f, -9.8f/100.0f)*DT;
+	particle->velocity += vec2f(0.0f, -9.8f/50.0f)*DT;
 	lock.unlock();
 }
 
