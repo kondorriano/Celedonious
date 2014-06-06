@@ -34,9 +34,6 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	DeferredContainer* renderer = new DeferredContainer();
 	renderer->addTo(blur);
 
-	FluidSimulation* fs = new FluidSimulation();
-	fs->addTo(renderer);
-
 	DebugDrawer* dbg = new DebugDrawer();
 	dbg->addTo(renderer);
 

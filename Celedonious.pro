@@ -16,7 +16,6 @@ SOURCES += main.cpp \
     SceneMain/physics/PolygonCollider.cpp \
     SceneMain/Level.cpp \
     SceneMain/DebugDrawer.cpp \
-    SceneMain/FluidSimulation.cpp \
     SceneMain/TaskPool.cpp \
     SceneMain/GenericBody.cpp
 
@@ -35,7 +34,6 @@ HEADERS += \
     SceneMain/Level.hpp \
     SceneMain/physics/PhysicsDebugDrawer.hpp \
     SceneMain/DebugDrawer.hpp \
-    SceneMain/FluidSimulation.hpp \
     SceneMain/TaskPool.hpp \
     SceneMain/GenericBody.hpp
 
