@@ -123,9 +123,8 @@ void FluidSimulation::applyLiquidConstraints() {
 bool FluidSimulation::reportBody(PhysicsBody* body)  {
 	AABB aabb = body->getCollider()->getAABB();
 	// Get the top left corner of the AABB in grid coordinates
-	int Ax = getGridX(aabb.getMax().x);
+	int Ax = getGridX(aabb.getMin().x);
 	int Ay = getGridY(aabb.getMin().y);
-
 	// Get the bottom right corner of the AABB in grid coordinates
 	int Bx = getGridX(aabb.getMax().x) + 1;
 	int By = getGridY(aabb.getMax().y) + 1;
@@ -175,7 +174,6 @@ void FluidSimulation::calculatePressure(int index) {
 		float distanceSq = glm::length(relativePosition)*glm::length(relativePosition);
 		if (distanceSq < IDEAL_RADIUS_SQ) {
 			particle->distances[a] = std::sqrt(distanceSq);
-			if (particle->distances[a] < EPSILON) particle->distances[a] = IDEAL_RADIUS - .01f;
 			float oneminusq = 1.0f - (particle->distances[a] / IDEAL_RADIUS);
 			particle->p = (particle->p + oneminusq * oneminusq);
 			particle->pnear = (particle->pnear + oneminusq * oneminusq * oneminusq);
@@ -208,34 +206,34 @@ void FluidSimulation::calculateForce(int index) {
 	for (int j = 0; j < particle->neighborCount; j++)
 		delta[particle->neighbors[j]] += particle->neighborsDelta[j] / MULTIPLIER;
 	delta[index] += change / MULTIPLIER;
-	particle->velocity += vec2f(0.0f, -9.8f/50.0f)*DT;
+	particle->velocity += vec2f(0.0f, -9.8f/100.0f)*DT;
 	lock.unlock();
 }
 
 void FluidSimulation::resolveCollision(int index) {
 	Particle* particle = &liquid[index];
-
 	// Test all fixtures stored in this particle
-	for (int i = 0; i < particle->numFixturesToTest; i++) {
-		Collider* fixture = particle->fixturesToTest[i]->getCollider();
-
+	for (int v = 0; v < particle->numFixturesToTest; v++) {
+		Collider* fixture = particle->fixturesToTest[v]->getCollider();
 		// Determine where the particle will be after being moved
 		vec2f newPosition = particle->position + particle->velocity + delta[index];
-
 		// Test to see if the new particle position is inside the fixture
 		if (fixture->testPoint(newPosition)) {
 			vec2f closestPoint(0.0f);
 			vec2f normal(0.0f);
-
 			// Resolve collisions differently based on what type of shape they are
 			if (fixture->getCType() == Collider::Polygon) {
 				PolygonCollider* poly = (PolygonCollider*) fixture;
-				for (int v = 0; v < poly->getVertexCount(); v++) {
+				int vCount = poly->getVertexCount();
+				for (int v = 0; v < vCount; v++) {
 					// Transform the shape's vertices from local space to world space
-					particle->collisionVertices[v] = poly->getWorldVertex(i);
-
+					particle->collisionVertices[v] = poly->getWorldVertex(v);
+				}
+				for (int v = 0; v < vCount; v++) {
+					int prevVertex = (v == 0? vCount-1 : v-1);
+					vec2f normal = glm::normalize(particle->collisionVertices[v]-particle->collisionVertices[prevVertex]);
 					// Transform the shape's normals using the rotation matrix
-					particle->collisionNormals[v] = MathUtils.Multiply(collisionXF.R, poly->normals[v]);
+					particle->collisionNormals[v] = vec2f(normal.y,-normal.x);
 				}
 
 				// Find closest edge

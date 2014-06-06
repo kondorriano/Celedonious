@@ -30,7 +30,7 @@ void DebugDrawer::update(float deltaTime) {
 void DebugDrawer::draw() const {
 	if(renderer->getMode() != DeferredContainer::Forward) return;
 	if(drawEnabled) PhysicsEngine::draw(this);
-	if(gridEnabled) PhysicsEngine::drawGrid(this, vec2f(-20.0f), vec2f(20.0f), 1.0f, vec4f(1.0f, 1.0f, 1.0f, 0.1f));
+	if(gridEnabled) PhysicsEngine::drawGrid(this, vec2f(-60.0f), vec2f(60.0f), .6f, vec4f(1.0f, 1.0f, 1.0f, 0.1f));
 }
 
 void DebugDrawer::drawPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) {

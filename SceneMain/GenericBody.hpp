@@ -4,17 +4,13 @@
 #include "physics/PhysicsBody.hpp"
 
 class DeferredContainer;
-class SquareObject : public PhysicsBody {
+class GenericBody : public PhysicsBody {
 	public:
-		SquareObject();
-		~SquareObject();
+		GenericBody();
+		~GenericBody();
 
 		void update(float deltaTime);
-		void draw() const;
-
-	private:
-		Model quad;
-		DeferredContainer* renderer;
+		void set(Collider *newCollider);
 };
 
 #endif // SQUAREOBJECT_HPP

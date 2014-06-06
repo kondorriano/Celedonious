@@ -8,7 +8,6 @@ SOURCES += main.cpp \
 	SceneMain/DeferredContainer.cpp \
 	SceneMain/DeferredLight.cpp \
 	SceneMain/BlurContainer.cpp \
-	SceneMain/SquareObject.cpp \
 	SceneMain/Player.cpp \
 	SceneMain/physics/PhysicsEngine.cpp \
 	SceneMain/physics/PhysicsBody.cpp \
@@ -18,7 +17,8 @@ SOURCES += main.cpp \
     SceneMain/Level.cpp \
     SceneMain/DebugDrawer.cpp \
     SceneMain/FluidSimulation.cpp \
-    SceneMain/TaskPool.cpp
+    SceneMain/TaskPool.cpp \
+    SceneMain/GenericBody.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -26,7 +26,6 @@ HEADERS += \
 	SceneMain/DeferredContainer.hpp \
 	SceneMain/DeferredLight.hpp \
 	SceneMain/BlurContainer.hpp \
-	SceneMain/SquareObject.hpp \
 	SceneMain/Player.hpp \
 	SceneMain/physics/PhysicsEngine.hpp \
 	SceneMain/physics/PhysicsBody.hpp \
@@ -37,7 +36,8 @@ HEADERS += \
     SceneMain/physics/PhysicsDebugDrawer.hpp \
     SceneMain/DebugDrawer.hpp \
     SceneMain/FluidSimulation.hpp \
-    SceneMain/TaskPool.hpp
+    SceneMain/TaskPool.hpp \
+    SceneMain/GenericBody.hpp
 
 OTHER_FILES += \
 	data/shaders/light.frag \

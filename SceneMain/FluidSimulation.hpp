@@ -7,7 +7,7 @@ class PhysicsBody;
 class Particle {
 	public:
 		static constexpr int MAX_NEIGHBORS = 75;
-		static constexpr int MAX_FIXTURES_TO_TEST = 20;
+		static constexpr int MAX_FIXTURES_TO_TEST = 5;
 
 		Particle(vec2f position = vec2f(0.0f), vec2f velocity = vec2f(0.0f), bool alive = false);
 		~Particle();
@@ -33,7 +33,7 @@ class Particle {
 class DeferredContainer;
 class FluidSimulation : public GameObject, public TaskPool, public PhysicsQueryCallback {
 	public:
-		static constexpr int MAX_PARTICLES = 4000;
+		static constexpr int MAX_PARTICLES = 1000;
 		static constexpr float RADIUS = 0.9f;
 		static constexpr float VISCOSITY = 0.0004f;
 		static constexpr float DT = 1.0f / 30.0f;

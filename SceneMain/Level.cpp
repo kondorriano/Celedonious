@@ -9,7 +9,7 @@ Level::Level() {
 	PolygonCollider* p = new PolygonCollider();
 	p->setAsBox(1.0f,1.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(0, -5));
+	p->setPosition(vec2f(0.0f));
 	setCollider(p);
 }
 

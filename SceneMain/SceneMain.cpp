@@ -1,13 +1,14 @@
 #include "SceneMain.hpp"
 #include "DeferredContainer.hpp"
 #include "BlurContainer.hpp"
-#include "SquareObject.hpp"
+#include "GenericBody.hpp"
 #include "DeferredLight.hpp"
 #include "Player.hpp"
 #include "Level.hpp"
 #include "DebugDrawer.hpp"
 #include "FluidSimulation.hpp"
 #include "physics/PhysicsEngine.hpp"
+#include "physics/PolygonCollider.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
@@ -42,11 +43,29 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	Player* player = new Player();
 	player->addTo(renderer);
 
-	SquareObject* sq = new SquareObject();
-	sq->addTo(renderer);
+	GenericBody* b = new GenericBody();
+	PolygonCollider* p = new PolygonCollider();
+	p->setAsBox(10.0f,1.0f);
+	p->setDType(Collider::Static);
+	p->setPosition(vec2f(0.0f));
+	b->set(p);
+	b->addTo(renderer);
 
-	Level* level = new Level();
-	level->addTo(renderer);
+	b = new GenericBody();
+	p = new PolygonCollider();
+	p->setAsBox(1.0f,10.0f);
+	p->setDType(Collider::Static);
+	p->setPosition(vec2f(-5.0f,0.0f));
+	b->set(p);
+	b->addTo(renderer);
+
+	b = new GenericBody();
+	p = new PolygonCollider();
+	p->setAsBox(1.0f,10.0f);
+	p->setDType(Collider::Static);
+	p->setPosition(vec2f(5.0f,0.0f));
+	b->set(p);
+	b->addTo(renderer);
 
 	DeferredLight* dl = new DeferredLight();
 	dl->pos = vec3f(5.0f,5.0f,5.0f);
