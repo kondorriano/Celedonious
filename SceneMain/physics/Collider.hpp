@@ -79,6 +79,7 @@ class Collider {
 		b2Body* pBody;
 		b2Fixture* fixture;
 		b2Shape* shape;
+		PhysicsBody* node;
 		CType type;
 
 		float friction;

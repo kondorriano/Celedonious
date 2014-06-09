@@ -1,15 +1,15 @@
 #include "PhysicsBody.hpp"
 
-PhysicsBody::PhysicsBody() : collider(nullptr) {
+PhysicsBody::PhysicsBody() {
 }
 
 PhysicsBody::~PhysicsBody() {
-	if(collider != nullptr) delete collider;
+	for(int i = 0; i < colliders.size(); ++i)
+		delete colliders[i];
 }
 
-void PhysicsBody::setCollider(Collider* newCollider) {
-	if(collider != nullptr) delete collider;
-	collider = newCollider;
-	collider->init(this);
+void PhysicsBody::addCollider(Collider* newCollider) {
+	newCollider->init(this);
+	colliders.push_back(newCollider);
 }
 

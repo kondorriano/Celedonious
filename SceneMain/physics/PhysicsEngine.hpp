@@ -4,12 +4,13 @@
 
 class PhysicsBody;
 class PhysicsDebugDrawer;
+class Collider;
 class PhysicsQueryCallback {
 	public:
 		PhysicsQueryCallback();
 		virtual ~PhysicsQueryCallback();
 
-		virtual bool reportBody(PhysicsBody* body) = 0;
+		virtual bool reportCollider(Collider* collider) = 0;
 };
 
 class PhysicsEngine {
@@ -21,6 +22,7 @@ class PhysicsEngine {
 		static void queryAABB(PhysicsQueryCallback* callback, AABB aabb);
 		static void close();
 
+		static b2World* world;
 	private:
 		class PECallback : public b2QueryCallback {
 			public:
@@ -30,14 +32,11 @@ class PhysicsEngine {
 				PhysicsQueryCallback* callback;
 
 				void reset(PhysicsQueryCallback* newCallback);
-			private:
-				std::set<PhysicsBody*> visited;
 		};
 
 		static b2Body* createBody();
 		static void deleteBody(b2Body* body);
 
-		static b2World* world;
 		static float timestep;
 		static int velocityIterations;
 		static int positionIterations;

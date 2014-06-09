@@ -13,6 +13,8 @@ class SceneMain : public GameObject {
 		void loadResources();
 		float debugCounter;
 		int fpsCount;
+
+		b2ParticleSystem* psys;
 };
 
 #endif // SCENEMAIN_HPP

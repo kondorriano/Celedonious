@@ -2,9 +2,9 @@
 #include "PhysicsEngine.hpp"
 #include "PhysicsBody.hpp"
 
-Collider::Collider() : pBody(nullptr), fixture(nullptr), shape(nullptr), friction(0.1f), restitution(0.25f), density(1.0f), sensor(false) {
+Collider::Collider() : pBody(nullptr), fixture(nullptr), shape(nullptr), node(nullptr), friction(0.1f), restitution(0.25f), density(1.0f), sensor(false) {
 	pBody = PhysicsEngine::createBody();
-	pBody->SetUserData(nullptr);
+	pBody->SetUserData(this);
 	setActive(true);
 	setBullet(false);
 	setAngularDamping(0.0f);
@@ -25,8 +25,8 @@ Collider::~Collider() {
 }
 
 void Collider::init(PhysicsBody* pb) {
-	VBE_ASSERT(pBody->GetUserData() == nullptr, "Trying to assign a collider to a physics object, but this collider was already assigned to some other object. Create a new collider instead.");
-	pBody->SetUserData(pb);
+	VBE_ASSERT(node == nullptr, "Trying to assign a collider to a physics object, but this collider was already assigned to some other object. Create a new collider instead.");
+	node = pb;
 }
 
 void Collider::remake() {
@@ -37,6 +37,7 @@ void Collider::remake() {
 	d.friction = friction;
 	d.isSensor = sensor;
 	d.restitution = restitution;
+	d.userData = this;
 	fixture = pBody->CreateFixture(&d);
 	pBody->ResetMassData();
 }

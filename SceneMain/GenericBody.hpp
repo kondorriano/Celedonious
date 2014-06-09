@@ -11,6 +11,9 @@ class GenericBody : public PhysicsBody {
 
 		void update(float deltaTime);
 		void set(Collider *newCollider);
+
+	public:
+		Collider* col;
 };
 
 #endif // SQUAREOBJECT_HPP

@@ -5,7 +5,11 @@
 class PhysicsDebugDrawer : public GameObject, public b2Draw {
 	public:
 		PhysicsDebugDrawer() {}
-		~PhysicsDebugDrawer() {}
+		virtual ~PhysicsDebugDrawer() {}
+
+		inline void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count) {
+			drawParticles((vec2f*)centers, radius, (vec4uc*) colors, count);
+		}
 
 		inline void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
 			drawPolygon((const vec2f*) vertices, vertexCount, vec4f(color.r, color.g, color.b, 0.5f));
@@ -30,6 +34,7 @@ class PhysicsDebugDrawer : public GameObject, public b2Draw {
 			drawTransform(vec2f(xf.p.x, xf.p.y), vec2f(xf.q.GetXAxis().x, xf.q.GetXAxis().y), vec2f(xf.q.GetYAxis().x, xf.q.GetYAxis().y));
 		}
 
+		virtual void drawParticles(vec2f* centers, float radius, vec4uc* colors, int count) = 0;
 		virtual void drawPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) = 0;
 		virtual void drawSolidPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) = 0;
 		virtual void drawCircle(const vec2f& center, float radius, const vec4f& color) = 0;

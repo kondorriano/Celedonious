@@ -11,6 +11,7 @@ class DebugDrawer : public PhysicsDebugDrawer {
 		void update(float deltaTime);
 		void draw() const;
 
+		void drawParticles(vec2f* centers, float radius, vec4uc* colors, int count);
 		void drawPolygon(const vec2f* vertices, int vertexCount, const vec4f& color);
 		void drawSolidPolygon(const vec2f* vertices, int vertexCount, const vec4f& color);
 		void drawCircle(const vec2f& center, float radius, const vec4f& color);

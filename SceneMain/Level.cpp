@@ -10,7 +10,7 @@ Level::Level() {
 	p->setAsBox(1.0f,1.0f);
 	p->setDType(Collider::Static);
 	p->setPosition(vec2f(0.0f));
-	setCollider(p);
+	addCollider(p);
 }
 
 Level::~Level() {
@@ -18,8 +18,6 @@ Level::~Level() {
 
 void Level::update(float deltaTime) {
 	(void) deltaTime;
-	transform = glm::translate(mat4f(1.0f), vec3f(getCollider()->getPosition(), 0.0f));
-	transform = glm::rotate(transform, getCollider()->getRotation(), vec3f(0, 0, 1));
 }
 
 void Level::draw() const {

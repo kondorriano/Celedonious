@@ -4,7 +4,7 @@
 
 DebugDrawer::DebugDrawer() : drawEnabled(true), gridEnabled(true), renderer(nullptr) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
-	this->SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit | b2Draw::e_jointBit | b2Draw::e_pairBit);
+	this->SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_particleBit);
 	std::vector<Vertex::Element> e = {Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 2)};
 	Vertex::Format f(e);
 	std::vector<vec2f> coords;
@@ -30,7 +30,16 @@ void DebugDrawer::update(float deltaTime) {
 void DebugDrawer::draw() const {
 	if(renderer->getMode() != DeferredContainer::Forward) return;
 	if(drawEnabled) PhysicsEngine::draw(this);
-	if(gridEnabled) PhysicsEngine::drawGrid(this, vec2f(-60.0f), vec2f(60.0f), .6f, vec4f(1.0f, 1.0f, 1.0f, 0.1f));
+	if(gridEnabled) PhysicsEngine::drawGrid(this, vec2f(-60.0f), vec2f(60.0f), 1.0f, vec4f(1.0f, 1.0f, 1.0f, 0.1f));
+}
+
+void DebugDrawer::drawParticles(vec2f* centers, float radius, vec4uc* colors, int count) {
+	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
+	poly.mesh->setPrimitiveType(Mesh::POINTS);
+	poly.mesh->setVertexData(centers, count);
+	poly.program->uniform("color")->set(vec4f(1.0f));
+	poly.program->uniform("MVP")->set(cam->projection*cam->getView());
+	poly.draw();
 }
 
 void DebugDrawer::drawPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) {

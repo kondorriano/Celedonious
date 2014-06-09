@@ -72,16 +72,13 @@ PhysicsEngine::PECallback::~PECallback() {
 }
 
 bool PhysicsEngine::PECallback::ReportFixture(b2Fixture* fixture) {
-	PhysicsBody* bodyPointer = (PhysicsBody*) fixture->GetBody()->GetUserData();
-	VBE_WARN((bodyPointer != nullptr), "An orphan collider has showed up on an AABB query. Orphaned colliders cannot be queried on AABB queries");
-	if(bodyPointer == nullptr || visited.find(bodyPointer) != visited.end()) return true;
-	visited.insert(bodyPointer);
-	return callback->reportBody(bodyPointer);
+	Collider* collider = (Collider*) fixture->GetBody()->GetUserData();
+	VBE_WARN((collider != nullptr), "An orphan collider has showed up on an AABB query. Orphaned colliders cannot be queried on AABB queries");
+	return callback->reportCollider(collider);
 }
 
 void PhysicsEngine::PECallback::reset(PhysicsQueryCallback* newCallback) {
 	callback = newCallback;
-	visited.clear();
 }
 
 PhysicsQueryCallback::PhysicsQueryCallback(){

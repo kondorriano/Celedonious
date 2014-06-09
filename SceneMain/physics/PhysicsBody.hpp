@@ -10,17 +10,16 @@ class PhysicsBody : public GameObject {
 
 		virtual void update(float deltaTime) {(void) deltaTime;}
 		virtual void draw() const {}
-		Collider* getCollider() const {return collider;}
 
 	protected:
-		void setCollider(Collider* newCollider);
+		void addCollider(Collider* newCollider);
 
 		virtual void onCollisionEnter(PhysicsBody* other) {(void) other;}
 		virtual void onCollisionExit(PhysicsBody* other) {(void) other;}
 		virtual void onCollision(PhysicsBody* other) {(void) other;}
 
 	private:
-		Collider* collider;
+		std::vector<Collider*> colliders;
 };
 
 #endif // PHYSICSBODY_HPP

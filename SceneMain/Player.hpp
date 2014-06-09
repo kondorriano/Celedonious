@@ -1,9 +1,11 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include "commons.hpp"
+#include "physics/PhysicsBody.hpp"
 
 class DeferredContainer;
-class Player : public GameObject {
+class CircleCollider;
+class Player : public PhysicsBody {
 	public:
 		Player();
 		~Player();
@@ -15,6 +17,7 @@ class Player : public GameObject {
 		Model model;
 		Camera* cam;
 		vec3f pos;
+		CircleCollider* rueda;
 		DeferredContainer* renderer;
 };
 

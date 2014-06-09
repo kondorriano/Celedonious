@@ -6,9 +6,9 @@
 #include "Player.hpp"
 #include "Level.hpp"
 #include "DebugDrawer.hpp"
-#include "FluidSimulation.hpp"
 #include "physics/PhysicsEngine.hpp"
 #include "physics/PolygonCollider.hpp"
+#include "physics/CircleCollider.hpp"
 
 SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
@@ -28,6 +28,10 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 
 	PhysicsEngine::init();
 
+	b2ParticleSystemDef def;
+	def.radius = 0.5f;
+	psys = PhysicsEngine::world->CreateParticleSystem(&def);
+
 	BlurContainer* blur = new BlurContainer();
 	blur->addTo(this);
 
@@ -42,25 +46,27 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 
 	GenericBody* b = new GenericBody();
 	PolygonCollider* p = new PolygonCollider();
-	p->setAsBox(10.0f,1.0f);
+	p->setAsBox(500.0f,1.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(0.0f));
+	p->setPosition(vec2f(0.0f, -10.0f));
+	p->setFriction(100.0f);
+	p->setRestitution(0.1f);
 	b->set(p);
 	b->addTo(renderer);
 
 	b = new GenericBody();
 	p = new PolygonCollider();
-	p->setAsBox(1.0f,10.0f);
+	p->setAsBox(1.0f,110.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(-5.0f,0.0f));
+	p->setPosition(vec2f(-50.0f,100.0f));
 	b->set(p);
 	b->addTo(renderer);
 
 	b = new GenericBody();
 	p = new PolygonCollider();
-	p->setAsBox(1.0f,10.0f);
+	p->setAsBox(1.0f,110.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(5.0f,0.0f));
+	p->setPosition(vec2f(50.0f,100.0f));
 	b->set(p);
 	b->addTo(renderer);
 
@@ -123,5 +129,26 @@ void SceneMain::update(float deltaTime) {
 		VBE_LOG("FPS: " << fpsCount);
 		debugCounter--;
 		fpsCount = 0;
+	}
+	Camera* cam = (Camera*)getGame()->getObjectByName("playerCam");
+	if(Environment::getMouse()->isButtonPressed(Mouse::Left)) {
+		GenericBody* b = new GenericBody();
+		CircleCollider* p = new CircleCollider();
+		p->setDensity(100.0f);
+		p->setRadius(3.0f);
+		p->setDType(Collider::Dynamic);
+		p->setPosition(vec2f(cam->getWorldPos().x, cam->getWorldPos().y));
+		b->set(p);
+		b->addTo(this);
+	}
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) {
+		for(int i = 0; i < 30; ++i) {
+			b2ParticleDef pd;
+			pd.flags = b2_waterParticle;
+			pd.color.Set(0, 0, 255, 255);
+			pd.position.Set(((float(rand()%10000)/10000.0f)*2-1)*5+cam->getWorldPos().x, ((float(rand()%10000)/10000.0f)*2-1)*5+cam->getWorldPos().y);
+			pd.lifetime = 1000000;
+			psys->CreateParticle(pd);
+		}
 	}
 }
