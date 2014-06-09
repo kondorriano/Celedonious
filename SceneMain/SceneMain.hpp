@@ -14,6 +14,7 @@ class SceneMain : public GameObject {
 		float debugCounter;
 		int fpsCount;
 
+		int pCount;
 		b2ParticleSystem* psys;
 };
 

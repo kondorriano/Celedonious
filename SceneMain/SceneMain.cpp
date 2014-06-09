@@ -10,7 +10,7 @@
 #include "physics/PolygonCollider.hpp"
 #include "physics/CircleCollider.hpp"
 
-SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
+SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 	this->setName("SCENE");
 
 	loadResources();
@@ -29,7 +29,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	PhysicsEngine::init();
 
 	b2ParticleSystemDef def;
-	def.radius = 0.5f;
+	def.radius = 0.15f;
 	psys = PhysicsEngine::world->CreateParticleSystem(&def);
 
 	BlurContainer* blur = new BlurContainer();
@@ -127,6 +127,7 @@ void SceneMain::update(float deltaTime) {
 	debugCounter += deltaTime;
 	if (debugCounter > 1) {
 		VBE_LOG("FPS: " << fpsCount);
+		Log::message() << pCount << Log::Flush;
 		debugCounter--;
 		fpsCount = 0;
 	}
@@ -150,5 +151,6 @@ void SceneMain::update(float deltaTime) {
 			pd.lifetime = 1000000;
 			psys->CreateParticle(pd);
 		}
+		pCount += 30;
 	}
 }

@@ -37,7 +37,7 @@ void Player::update(float deltaTime) {
 	else
 		rueda->setAngularVelocity(rueda->getAngularVelocity()*0.6f);
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::UP)){
-		if(rueda->getLinearVelocity().y < 5.0f) rueda->applyForceToCenterOfMass(vec2f(40.0f,40.0f));
+		if(rueda->getLinearVelocity().y < 5.0f) rueda->applyForceToCenterOfMass(vec2f(0.0f,80.0f));
 	}
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Down)){
 		if(rueda->getLinearVelocity().y > -50.0f) rueda->applyForceToCenterOfMass(vec2f(0.0f,-80.0f));
