@@ -16,6 +16,7 @@ class SceneMain : public GameObject {
 
 		int pCount;
 		b2ParticleSystem* psys;
+		GameObject* wall;
 };
 
 #endif // SCENEMAIN_HPP

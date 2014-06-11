@@ -58,7 +58,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 	p = new PolygonCollider();
 	p->setAsBox(1.0f,110.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(-50.0f,100.0f));
+	p->setPosition(vec2f(-10.0f,100.0f));
 	b->set(p);
 	b->addTo(renderer);
 
@@ -66,9 +66,11 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 	p = new PolygonCollider();
 	p->setAsBox(1.0f,110.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(50.0f,100.0f));
+	p->setPosition(vec2f(10.0f,100.0f));
 	b->set(p);
 	b->addTo(renderer);
+
+	wall = b;
 
 	DeferredLight* dl = new DeferredLight();
 	dl->pos = vec3f(5.0f,5.0f,5.0f);
@@ -153,4 +155,5 @@ void SceneMain::update(float deltaTime) {
 		}
 		pCount += 30;
 	}
+	if(Environment::getKeyboard()->isKeyPressed(Keyboard::M)) wall->removeAndDelete();
 }
