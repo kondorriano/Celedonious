@@ -46,7 +46,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 
 	GenericBody* b = new GenericBody();
 	PolygonCollider* p = new PolygonCollider();
-	p->setAsBox(500.0f,1.0f);
+	p->setAsBox(20.0f,1.0f);
 	p->setDType(Collider::Static);
 	p->setPosition(vec2f(0.0f, -10.0f));
 	p->setFriction(100.0f);
@@ -56,17 +56,17 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 
 	b = new GenericBody();
 	p = new PolygonCollider();
-	p->setAsBox(1.0f,110.0f);
+	p->setAsBox(1.0f,20.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(-10.0f,100.0f));
+	p->setPosition(vec2f(-10.0f,10.0f));
 	b->set(p);
 	b->addTo(renderer);
 
 	b = new GenericBody();
 	p = new PolygonCollider();
-	p->setAsBox(1.0f,110.0f);
+	p->setAsBox(1.0f,20.0f);
 	p->setDType(Collider::Static);
-	p->setPosition(vec2f(10.0f,100.0f));
+	p->setPosition(vec2f(10.0f,10.0f));
 	b->set(p);
 	b->addTo(renderer);
 

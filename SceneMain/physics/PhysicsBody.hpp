@@ -13,6 +13,8 @@ class PhysicsBody : public GameObject {
 
 	protected:
 		void addCollider(Collider* newCollider);
+		int getNumColliders() const;
+		Collider* getCollider(int index) const;
 
 		virtual void onCollisionEnter(PhysicsBody* other) {(void) other;}
 		virtual void onCollisionExit(PhysicsBody* other) {(void) other;}
