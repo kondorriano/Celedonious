@@ -24,6 +24,10 @@ Collider::~Collider() {
 	if(shape != nullptr) delete shape;
 }
 
+PhysicsBody* Collider::getBody() {
+	return node;
+}
+
 void Collider::init(PhysicsBody* pb) {
 	VBE_ASSERT(node == nullptr, "Trying to assign a collider to a physics object, but this collider was already assigned to some other object. Create a new collider instead.");
 	node = pb;

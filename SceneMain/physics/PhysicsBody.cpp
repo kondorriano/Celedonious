@@ -22,3 +22,18 @@ Collider*PhysicsBody::getCollider(int index) const {
 	return colliders[index];
 }
 
+void PhysicsBody::onCollisionEnter(int colliderIndex, Collider* other) {
+	(void) colliderIndex;
+	(void) other;
+}
+
+void PhysicsBody::onCollisionExit(int colliderIndex, Collider* other) {
+	(void) colliderIndex;
+	(void) other;
+}
+
+void PhysicsBody::onCollision(int colliderIndex, Collider* other) {
+	(void) colliderIndex;
+	(void) other;
+}
+

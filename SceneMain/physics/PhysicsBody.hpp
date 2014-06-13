@@ -16,9 +16,9 @@ class PhysicsBody : public GameObject {
 		int getNumColliders() const;
 		Collider* getCollider(int index) const;
 
-		virtual void onCollisionEnter(PhysicsBody* other) {(void) other;}
-		virtual void onCollisionExit(PhysicsBody* other) {(void) other;}
-		virtual void onCollision(PhysicsBody* other) {(void) other;}
+		virtual void onCollisionEnter(int colliderIndex, Collider* other);
+		virtual void onCollisionExit(int colliderIndex, Collider* other);
+		virtual void onCollision(int colliderIndex, Collider* other);
 
 	private:
 		std::vector<Collider*> colliders;

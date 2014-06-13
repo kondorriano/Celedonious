@@ -25,6 +25,8 @@ class Collider {
 		Collider();
 		virtual ~Collider();
 
+		PhysicsBody* getBody();
+
 		void applyForce(const vec2f& f, const vec2f& p);
 		void applyForceToCenterOfMass(const vec2f& f);
 		void applyTorque(float torque);
