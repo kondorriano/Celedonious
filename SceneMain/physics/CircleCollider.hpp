@@ -2,16 +2,20 @@
 #define CIRCLECOLLIDER_HPP
 #include "Collider.hpp"
 
-class CircleCollider : public Collider {
-	public:
-		CircleCollider();
-		~CircleCollider();
+namespace Physics {
 
-		float getRadius();
-		void setRadius(float r);
+	class CircleCollider : public Collider {
+		public:
+			CircleCollider();
+			~CircleCollider();
 
-		int getVertexCount() const;
-		vec2f getVertex(int index) const;
-};
+			float getRadius();
+			void setRadius(float r);
+
+			int getVertexCount() const;
+			vec2f getVertex(int index) const;
+	};
+
+}
 
 #endif // CIRCLECOLLIDER_HPP

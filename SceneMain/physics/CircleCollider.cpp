@@ -1,29 +1,33 @@
 #include "CircleCollider.hpp"
-#include "PhysicsEngine.hpp"
+#include "Engine.hpp"
 
-CircleCollider::CircleCollider() {
-	shape = new b2CircleShape();
-	type = Circle;
-	setRadius(1.0f);
-}
+namespace Physics {
 
-CircleCollider::~CircleCollider(){
-}
+	CircleCollider::CircleCollider() {
+		b2CircleShape newshape;
+		newshape.m_radius = 1.0f;
+		type = Circle;
+		remake(&newshape);
+	}
 
-float CircleCollider::getRadius() {
-	return ((b2CircleShape*)shape)->m_radius;
-}
+	CircleCollider::~CircleCollider(){
+	}
 
-void CircleCollider::setRadius(float r) {
-	((b2CircleShape*)shape)->m_radius = r;
-	remake();
-}
+	float CircleCollider::getRadius() {
+		return ((b2CircleShape*)shape)->m_radius;
+	}
 
-int CircleCollider::getVertexCount() const {
-	return ((b2CircleShape*)shape)->GetVertexCount();
-}
+	void CircleCollider::setRadius(float r) {
+		((b2CircleShape*)shape)->m_radius = r;
+	}
 
-vec2f CircleCollider::getVertex(int index) const {
-	VBE_ASSERT(index < getVertexCount(), "Circle Vertex: index out of bounds");
-	return Utils::B2Dv2ToGLMv2(((b2CircleShape*)shape)->GetVertex(index));
+	int CircleCollider::getVertexCount() const {
+		return ((b2CircleShape*)shape)->GetVertexCount();
+	}
+
+	vec2f CircleCollider::getVertex(int index) const {
+		VBE_ASSERT(index < getVertexCount(), "Circle Vertex: index out of bounds");
+		return Utils::B2Dv2ToGLMv2(((b2CircleShape*)shape)->GetVertex(index));
+	}
+
 }

@@ -1,11 +1,10 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include "commons.hpp"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Physics.hpp"
 
 class DeferredContainer;
-class CircleCollider;
-class Player : public PhysicsBody {
+class Player : public Physics::Body {
 	public:
 		Player();
 		~Player();
@@ -17,7 +16,7 @@ class Player : public PhysicsBody {
 		Model model;
 		Camera* cam;
 		vec3f pos;
-		CircleCollider* rueda;
+		Physics::CircleCollider* rueda;
 		DeferredContainer* renderer;
 };
 

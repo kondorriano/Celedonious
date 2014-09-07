@@ -1,12 +1,12 @@
-#ifndef DEBUGDRAWER_HPP
-#define DEBUGDRAWER_HPP
-#include "physics/PhysicsDebugDrawer.hpp"
+#ifndef MYDEBUGDRAWER_HPP
+#define MYDEBUGDRAWER_HPP
+#include "physics/DebugDrawer.hpp"
 
 class DeferredContainer;
-class DebugDrawer : public PhysicsDebugDrawer {
+class MyDebugDrawer : public Physics::DebugDrawer {
 	public:
-		DebugDrawer();
-		~DebugDrawer();
+		MyDebugDrawer();
+		~MyDebugDrawer();
 
 		void update(float deltaTime);
 		void draw() const;
@@ -27,4 +27,4 @@ class DebugDrawer : public PhysicsDebugDrawer {
 		DeferredContainer* renderer;
 };
 
-#endif // DEBUGDRAWER_HPP
+#endif // MYDEBUGDRAWER_HPP

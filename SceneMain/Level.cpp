@@ -1,14 +1,13 @@
 #include "Level.hpp"
 #include "DeferredContainer.hpp"
-#include "physics/PolygonCollider.hpp"
 
 Level::Level() {
 	quad.mesh = Meshes.get("quad");
 	quad.program = Programs.get("deferredModel");
 	renderer = (DeferredContainer*)getGame()->getObjectByName("deferred");
-	PolygonCollider* p = new PolygonCollider();
+	Physics::PolygonCollider* p = new Physics::PolygonCollider();
 	p->setAsBox(1.0f,1.0f);
-	p->setDType(Collider::Static);
+	p->setDType(Physics::Collider::Static);
 	p->setPosition(vec2f(0.0f));
 	addCollider(p);
 }

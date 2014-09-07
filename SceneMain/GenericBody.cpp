@@ -1,6 +1,5 @@
 #include "GenericBody.hpp"
 #include "DeferredContainer.hpp"
-#include "physics/PolygonCollider.hpp"
 
 GenericBody::GenericBody() {
 }
@@ -14,7 +13,7 @@ void GenericBody::update(float deltaTime) {
 	transform = glm::rotate(transform, glm::degrees(col->getRotation()), vec3f(0, 0, 1));
 }
 
-void GenericBody::set(Collider* newCollider) {
+void GenericBody::set(Physics::Collider* newCollider) {
 	col = newCollider;
 	addCollider(newCollider);
 }

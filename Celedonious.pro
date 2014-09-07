@@ -1,7 +1,6 @@
 include(VBE/VBE.pro)
 INCLUDEPATH += $$PWD/
 #DEFINES += __DLOG
-LIBS += -lBox2D
 SOURCES += main.cpp \
 	commons.cpp \
 	SceneMain/SceneMain.cpp \
@@ -9,13 +8,10 @@ SOURCES += main.cpp \
 	SceneMain/DeferredLight.cpp \
 	SceneMain/BlurContainer.cpp \
 	SceneMain/Player.cpp \
-	SceneMain/physics/PhysicsEngine.cpp \
-	SceneMain/physics/PhysicsBody.cpp \
     SceneMain/physics/Collider.cpp \
     SceneMain/physics/CircleCollider.cpp \
     SceneMain/physics/PolygonCollider.cpp \
     SceneMain/Level.cpp \
-    SceneMain/DebugDrawer.cpp \
     SceneMain/TaskPool.cpp \
     SceneMain/GenericBody.cpp \
     Box2D/Collision/Shapes/b2ChainShape.cpp \
@@ -70,7 +66,13 @@ SOURCES += main.cpp \
     Box2D/Particle/b2ParticleGroup.cpp \
     Box2D/Particle/b2ParticleSystem.cpp \
     Box2D/Particle/b2VoronoiDiagram.cpp \
-    Box2D/Rope/b2Rope.cpp
+    Box2D/Rope/b2Rope.cpp \
+    SceneMain/physics/WeldJoint.cpp \
+    SceneMain/physics/Joint.cpp \
+    SceneMain/physics/ParticleSystem.cpp \
+    SceneMain/physics/Body.cpp \
+    SceneMain/physics/Engine.cpp \
+    SceneMain/MyDebugDrawer.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -79,14 +81,10 @@ HEADERS += \
 	SceneMain/DeferredLight.hpp \
 	SceneMain/BlurContainer.hpp \
 	SceneMain/Player.hpp \
-	SceneMain/physics/PhysicsEngine.hpp \
-	SceneMain/physics/PhysicsBody.hpp \
     SceneMain/physics/Collider.hpp \
     SceneMain/physics/CircleCollider.hpp \
     SceneMain/physics/PolygonCollider.hpp \
     SceneMain/Level.hpp \
-    SceneMain/physics/PhysicsDebugDrawer.hpp \
-    SceneMain/DebugDrawer.hpp \
     SceneMain/TaskPool.hpp \
     SceneMain/GenericBody.hpp \
     Box2D/Collision/Shapes/b2ChainShape.h \
@@ -145,7 +143,16 @@ HEADERS += \
     Box2D/Particle/b2StackQueue.h \
     Box2D/Particle/b2VoronoiDiagram.h \
     Box2D/Rope/b2Rope.h \
-    Box2D/Box2D.h
+    Box2D/Box2D.h \
+    SceneMain/physics/Contact.hpp \
+    SceneMain/physics/WeldJoint.hpp \
+    SceneMain/physics/Joint.hpp \
+    SceneMain/physics/ParticleSystem.hpp \
+    SceneMain/physics/Body.hpp \
+    SceneMain/physics/DebugDrawer.hpp \
+    SceneMain/physics/Engine.hpp \
+    SceneMain/MyDebugDrawer.hpp \
+    SceneMain/physics/Physics.hpp
 
 OTHER_FILES += \
 	data/shaders/light.frag \

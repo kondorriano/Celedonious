@@ -1,6 +1,7 @@
 #ifndef SCENEMAIN_HPP
 #define SCENEMAIN_HPP
 #include "commons.hpp"
+#include "physics/Physics.hpp"
 
 class Chunk;
 class SceneMain : public GameObject {
@@ -15,7 +16,7 @@ class SceneMain : public GameObject {
 		int fpsCount;
 
 		int pCount;
-		b2ParticleSystem* psys;
+		Physics::ParticleSystem* psys;
 		GameObject* wall;
 };
 

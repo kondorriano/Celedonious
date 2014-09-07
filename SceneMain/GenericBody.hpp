@@ -1,19 +1,19 @@
 #ifndef SQUAREOBJECT_HPP
 #define SQUAREOBJECT_HPP
 #include "commons.hpp"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Physics.hpp"
 
 class DeferredContainer;
-class GenericBody : public PhysicsBody {
+class GenericBody : public Physics::Body {
 	public:
 		GenericBody();
 		~GenericBody();
 
 		void update(float deltaTime);
-		void set(Collider *newCollider);
+		void set(Physics::Collider* newCollider);
 
 	public:
-		Collider* col;
+		Physics::Collider* col;
 };
 
 #endif // SQUAREOBJECT_HPP

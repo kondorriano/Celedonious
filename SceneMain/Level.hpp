@@ -1,10 +1,10 @@
 #ifndef LEVEL_HPP
 #define LEVEL_HPP
 #include "commons.hpp"
-#include "physics/PhysicsBody.hpp"
+#include "physics/Physics.hpp"
 
 class DeferredContainer;
-class Level : public PhysicsBody {
+class Level : public Physics::Body {
 	public:
 		Level();
 		~Level();

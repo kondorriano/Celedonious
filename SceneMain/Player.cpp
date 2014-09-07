@@ -1,6 +1,5 @@
 #include "Player.hpp"
 #include "DeferredContainer.hpp"
-#include "physics/CircleCollider.hpp"
 
 Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
@@ -9,14 +8,30 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	cam = new Camera("playerCam",vec3f(0,0,20));
 	cam->projection = glm::perspective(60.0f, float(Environment::getScreen()->getWidth())/float(Environment::getScreen()->getHeight()), 0.1f, 10000.0f);
 	cam->addTo(this);
-	rueda = new CircleCollider();
-	rueda->setDType(Collider::Dynamic);
+	rueda = new Physics::CircleCollider();
+	rueda->setDType(Physics::Collider::Dynamic);
 	rueda->setPosition(vec2f(0.0f));
-	rueda->setDensity(1.5f);
+	rueda->setDensity(1.0f);
 	rueda->setFriction(10.0f);
 	rueda->setRadius(0.5f);
-	rueda->setRestitution(0.0f);
+	rueda->setRestitution(0.4f);
+	rueda->setSleepingAllowed(false);
 	this->addCollider(rueda);
+	Physics::CircleCollider* rueda2 = new Physics::CircleCollider();
+	rueda2->setDType(Physics::Collider::Dynamic);
+	rueda2->setPosition(vec2f(3.0f));
+	rueda2->setDensity(1.0f);
+	rueda2->setFriction(10.0f);
+	rueda2->setRadius(0.5f);
+	rueda2->setRestitution(0.4f);
+	rueda2->setSleepingAllowed(false);
+	this->addCollider(rueda2);
+	Physics::WeldJointDef def;
+	def.colliderA = rueda;
+	def.colliderB = rueda2;
+	def.localAnchorA = vec2f(3.0f);
+	def.dampingRatio = 0.0f;
+	Physics::WeldJoint* w = new Physics::WeldJoint(def);
 }
 
 Player::~Player() {
@@ -27,7 +42,7 @@ void Player::update(float deltaTime) {
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Left)) {
 		float current = rueda->getAngularVelocity();
 		if(current < 0.0f) rueda->setAngularVelocity(current*0.01f);
-		rueda->applyTorque(vel);
+		if(rueda->getAngularVelocity() < 20.0f)  rueda->applyTorque(vel);
 	}
 	else if(Environment::getKeyboard()->isKeyHeld(Keyboard::Right)) {
 		float current = rueda->getAngularVelocity();
@@ -44,6 +59,9 @@ void Player::update(float deltaTime) {
 	}
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) pos.z -= vel*deltaTime;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::LShift)) pos.z += vel*deltaTime;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::R)) rueda->setRadius(rueda->getRadius()+0.1f);
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::F)) rueda->setRadius(rueda->getRadius()-0.1f);
+	if(Environment::getKeyboard()->isKeyPressed(Keyboard::C)) rueda->deleteJoint(0);
 	pos.x = rueda->getPosition().x;
 	pos.y = rueda->getPosition().y;
 	transform = glm::translate(mat4f(1.0f), pos);
