@@ -72,7 +72,9 @@ SOURCES += main.cpp \
     SceneMain/physics/ParticleSystem.cpp \
     SceneMain/physics/Body.cpp \
     SceneMain/physics/Engine.cpp \
-    SceneMain/MyDebugDrawer.cpp
+    SceneMain/MyDebugDrawer.cpp \
+    SceneMain/physics/DistanceJoint.cpp \
+    SceneMain/physics/RevoluteJoint.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -152,7 +154,9 @@ HEADERS += \
     SceneMain/physics/DebugDrawer.hpp \
     SceneMain/physics/Engine.hpp \
     SceneMain/MyDebugDrawer.hpp \
-    SceneMain/physics/Physics.hpp
+    SceneMain/physics/Physics.hpp \
+    SceneMain/physics/DistanceJoint.hpp \
+    SceneMain/physics/RevoluteJoint.hpp
 
 OTHER_FILES += \
 	data/shaders/light.frag \

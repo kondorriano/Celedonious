@@ -8,12 +8,6 @@ namespace Physics {
 		public:
 			CircleCollider();
 			~CircleCollider();
-
-			float getRadius();
-			void setRadius(float r);
-
-			int getVertexCount() const;
-			vec2f getVertex(int index) const;
 	};
 
 }

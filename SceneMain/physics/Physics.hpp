@@ -13,6 +13,8 @@
 
 #include "Joint.hpp"
 #include "WeldJoint.hpp"
+#include "DistanceJoint.hpp"
+#include "RevoluteJoint.hpp"
 
 #include "DebugDrawer.hpp"
 

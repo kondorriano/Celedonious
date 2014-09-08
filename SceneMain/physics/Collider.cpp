@@ -23,7 +23,6 @@ namespace Physics {
 
 	Collider::~Collider() {
 		Engine::deleteBody(pBody);
-		pBody = nullptr;
 	}
 
 	Body* Collider::getBody() {
@@ -103,7 +102,6 @@ namespace Physics {
 	}
 
 	bool Collider::testPoint(vec2f point) {
-		if(fixture == nullptr) return false;
 		return fixture->TestPoint(Utils::GLMv2ToB2Dv2(point));
 	}
 
@@ -144,26 +142,34 @@ namespace Physics {
 
 	void Collider::setDensity(float density) {
 		this->density = density;
-		if(fixture != nullptr) fixture->SetDensity(density);
+		fixture->SetDensity(density);
 		pBody->ResetMassData();
 	}
 
 	void Collider::setFriction(float friction) {
 		this->friction = friction;
-		if(fixture != nullptr) fixture->SetFriction(friction);
+		fixture->SetFriction(friction);
 		pBody->ResetMassData();
 	}
 
 	void Collider::setRestitution(float restitution) {
 		this->restitution = restitution;
-		if(fixture != nullptr) fixture->SetRestitution(restitution);
+		fixture->SetRestitution(restitution);
 		pBody->ResetMassData();
 	}
 
 	void Collider::setSensor(bool sensor) {
 		this->sensor = sensor;
-		if(fixture != nullptr) fixture->SetSensor(sensor);
+		fixture->SetSensor(sensor);
 		pBody->ResetMassData();
+	}
+
+	float Collider::getRadius() const {
+		return shape->m_radius;
+	}
+
+	void Collider::setRadius(float r) {
+		shape->m_radius = r;
 	}
 
 	vec2f Collider::getWorldCenterOfMass() const {

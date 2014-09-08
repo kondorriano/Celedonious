@@ -15,23 +15,33 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	rueda->setFriction(10.0f);
 	rueda->setRadius(0.5f);
 	rueda->setRestitution(0.4f);
-	rueda->setSleepingAllowed(false);
 	this->addCollider(rueda);
 	Physics::CircleCollider* rueda2 = new Physics::CircleCollider();
 	rueda2->setDType(Physics::Collider::Dynamic);
-	rueda2->setPosition(vec2f(3.0f));
+	rueda2->setPosition(vec2f(0.0f));
 	rueda2->setDensity(1.0f);
 	rueda2->setFriction(10.0f);
-	rueda2->setRadius(0.5f);
-	rueda2->setRestitution(0.4f);
-	rueda2->setSleepingAllowed(false);
+	rueda2->setRadius(0.1f);
+	rueda2->setRestitution(0.0f);
+	rueda2->setFixedRotation(true);
 	this->addCollider(rueda2);
-	Physics::WeldJointDef def;
-	def.colliderA = rueda;
-	def.colliderB = rueda2;
-	def.localAnchorA = vec2f(3.0f);
-	def.dampingRatio = 0.0f;
-	Physics::WeldJoint* w = new Physics::WeldJoint(def);
+	Physics::PolygonCollider* box = new Physics::PolygonCollider();
+	box->setDType(Physics::Collider::Dynamic);
+	box->setPosition(vec2f(0.0f,1.6f));
+	box->setDensity(0.1f);
+	box->setFriction(10.0f);
+	box->setRestitution(0.4f);
+	box->setAsBox(0.4f,1.0f);
+	this->addCollider(box);
+	Physics::RevoluteJointDef def;
+	Physics::RevoluteJointDef def2;
+	def.init(rueda2, box, vec2f(0.0f));
+	def2.init(rueda, rueda2, vec2f(0.0f));
+	def.enableLimit = true;
+	def.lowerAngle = -0.3f;
+	def.upperAngle = 0.3f;
+	new Physics::RevoluteJoint(def);
+	new Physics::RevoluteJoint(def2);
 }
 
 Player::~Player() {

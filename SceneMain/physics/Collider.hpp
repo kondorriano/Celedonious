@@ -68,11 +68,15 @@ namespace Physics {
 			bool isSensor() const {return sensor;}
 			void setSensor(bool isSensor);
 
+			float getRadius() const;
+			void setRadius(float r);
+
 			vec2f getWorldCenterOfMass() const;
 			vec2f GetLocalCenterOfMass() const;
 
 			vec2f getPosition() const;
 			void setPosition(vec2f pos);
+
 
 			float getRotation() const;
 			void setRotation(float angle);
@@ -118,6 +122,8 @@ namespace Physics {
 
 		protected:
 			friend class WeldJoint;
+			friend class DistanceJoint;
+			friend class RevoluteJoint;
 
 			void init(Body* pb);
 			void remake(b2Shape* newShape);

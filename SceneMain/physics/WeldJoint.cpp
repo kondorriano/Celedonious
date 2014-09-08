@@ -16,10 +16,10 @@ namespace Physics {
 		d.frequencyHz = def.frequencyHz;
 		d.referenceAngle = def.referenceAngle;
 		d.collideConnected = def.collideConnected;
+		d.userData = this;
 		d.localAnchorA = Utils::GLMv2ToB2Dv2(def.localAnchorA);
 		d.localAnchorB = Utils::GLMv2ToB2Dv2(def.localAnchorB);
 		joint = Engine::createJoint(&d);
-		joint->SetUserData(this);
 	}
 
 	WeldJoint::~WeldJoint() {
@@ -31,6 +31,14 @@ namespace Physics {
 
 	vec2f WeldJoint::getAnchorB() const {
 		return Utils::B2Dv2ToGLMv2(((b2WeldJoint*)joint)->GetAnchorB());
+	}
+
+	vec2f WeldJoint::getLocalAnchorA() const {
+		return Utils::B2Dv2ToGLMv2(((b2WeldJoint*)joint)->GetLocalAnchorA());
+	}
+
+	vec2f WeldJoint::getLocalAnchorB() const {
+		return Utils::B2Dv2ToGLMv2(((b2WeldJoint*)joint)->GetLocalAnchorB());
 	}
 
 	vec2f WeldJoint::getReactionForce(float inverseDelta) const {
@@ -59,6 +67,14 @@ namespace Physics {
 
 	float WeldJoint::getReferenceAngle() const {
 		return ((b2WeldJoint*)joint)->GetReferenceAngle();
+	}
+
+	void WeldJointDef::init(Collider* cA, Collider* cB, const vec2f& anchor) {
+		colliderA = cA;
+		colliderB = cB;
+		localAnchorA = cA->getLocalPoint(anchor);
+		localAnchorB = cB->getLocalPoint(anchor);
+		referenceAngle = cB->getAngle() - cA->getAngle();
 	}
 
 }

@@ -337,4 +337,8 @@ namespace Physics {
 		Engine::registerContact(contact, BodyContact::Stay);
 	}
 
+	void Engine::CollisionCallback::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {
+		(void) contact; (void) impulse;
+	}
+
 }

@@ -56,7 +56,7 @@ namespace Physics {
 					void BeginContact(b2ParticleSystem* particleSystem, b2ParticleContact* particleContact);
 					void EndContact(b2ParticleSystem* particleSystem, int32 indexA, int32 indexB);
 					void PreSolve(b2Contact* contact, const b2Manifold* oldManifold);
-					void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {(void) contact; (void) impulse;}
+					void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
 			};
 
 			static b2Body* createBody();
@@ -94,6 +94,8 @@ namespace Physics {
 			friend class ParticleSystem;
 			friend class Joint;
 			friend class WeldJoint;
+			friend class DistanceJoint;
+			friend class RevoluteJoint;
 
 			Engine() {}
 			~Engine() {}

@@ -1,34 +1,34 @@
-#ifndef WELDJOINT_HPP
-#define WELDJOINT_HPP
+#ifndef DISTANCEJOINT_HPP
+#define DISTANCEJOINT_HPP
 #include "Joint.hpp"
 
 namespace Physics {
 
-	struct WeldJointDef : public JointDef {
-			WeldJointDef() {
-				localAnchorA = vec2f(0.0f);
-				localAnchorB = vec2f(0.0f);
-				referenceAngle = 0.0f;
-				frequencyHz = 0.0f;
-				dampingRatio = 0.0f;
+	struct DistanceJointDef : public JointDef {
+			DistanceJointDef() {
 				colliderA = nullptr;
 				colliderB = nullptr;
 				collideConnected = false;
+				localAnchorA = vec2f(0.0f);
+				localAnchorB = vec2f(0.0f);
+				length = 1.0f;
+				frequencyHz = 0.0f;
+				dampingRatio = 0.0f;
 			}
 
-			void init(Collider* cA, Collider* cB, const vec2f& anchor);
+			void init(Collider* cA, Collider* cB, const vec2f& anchor1, const vec2f& anchor2);
 
 			vec2f localAnchorA;
 			vec2f localAnchorB;
-			float referenceAngle;
+			float length;
 			float frequencyHz;
 			float dampingRatio;
 	};
 
-	class WeldJoint : public Joint {
+	class DistanceJoint : public Joint {
 		public:
-			WeldJoint(const WeldJointDef& def);
-			~WeldJoint();
+			DistanceJoint(const DistanceJointDef& def);
+			~DistanceJoint();
 
 			vec2f getAnchorA() const;
 			vec2f getAnchorB() const;
@@ -36,13 +36,14 @@ namespace Physics {
 			vec2f getLocalAnchorB() const;
 			vec2f getReactionForce(float inverseDelta) const;
 			float getReactionTorque(float inverseDelta) const;
-			float getFrequency() const;
 			void setFrequency(float newFrequency);
-			float getDampingRatio() const;
+			float getFrequency() const;
 			void setDampingRatio(float newDampingRatio);
-			float getReferenceAngle() const;
+			float getDampingRatio() const;
+			void setLength(float newLength);
+			float getLength() const;
 	};
 
 }
 
-#endif // WELDJOINT_HPP
+#endif // DISTANCEJOINT_HPP
