@@ -11,7 +11,6 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	rueda = new Physics::CircleCollider();
 	rueda->setDType(Physics::Collider::Dynamic);
 	rueda->setPosition(vec2f(0.0f));
-	rueda->setDensity(1.0f);
 	rueda->setFriction(10.0f);
 	rueda->setRadius(0.5f);
 	rueda->setRestitution(0.4f);
@@ -19,10 +18,8 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	Physics::CircleCollider* rueda2 = new Physics::CircleCollider();
 	rueda2->setDType(Physics::Collider::Dynamic);
 	rueda2->setPosition(vec2f(0.0f));
-	rueda2->setDensity(1.0f);
 	rueda2->setFriction(10.0f);
 	rueda2->setRadius(0.1f);
-	rueda2->setRestitution(0.0f);
 	rueda2->setFixedRotation(true);
 	this->addCollider(rueda2);
 	Physics::PolygonCollider* box = new Physics::PolygonCollider();
