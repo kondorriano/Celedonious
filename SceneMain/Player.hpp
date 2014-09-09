@@ -6,6 +6,13 @@
 class DeferredContainer;
 class Player : public Physics::Body {
 	public:
+
+		enum ColliderID {
+			Wheel = 0,
+			Body = 1,
+			Axis = 2
+		};
+
 		Player();
 		~Player();
 
@@ -16,7 +23,6 @@ class Player : public Physics::Body {
 		Model model;
 		Camera* cam;
 		vec3f pos;
-		Physics::CircleCollider* rueda;
 		DeferredContainer* renderer;
 };
 
