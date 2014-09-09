@@ -48,7 +48,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 	p->setAsBox(20.0f,1.0f);
 	p->setDType(Physics::Collider::Static);
 	p->setPosition(vec2f(0.0f, -10.0f));
-	p->setFriction(100.0f);
+	p->setFriction(1.0f);
 	p->setRestitution(0.1f);
 	b->set(p);
 	b->addTo(renderer);

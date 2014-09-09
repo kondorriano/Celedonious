@@ -11,7 +11,7 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	Physics::CircleCollider* rueda = new Physics::CircleCollider();
 	rueda->setDType(Physics::Collider::Dynamic);
 	rueda->setPosition(vec2f(0.0f));
-	rueda->setFriction(10.0f);
+	rueda->setFriction(800.0f);
 	rueda->setRadius(0.5f);
 	rueda->setRestitution(0.4f);
 	this->addCollider(rueda);
@@ -35,8 +35,11 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
 	def.init(axis, body, vec2f(0.0f));
 	def2.init(rueda, axis, vec2f(0.0f));
 	def.enableLimit = true;
+	def.enableMotor = true;
 	def.lowerAngle = -0.3f;
 	def.upperAngle = 0.3f;
+	def.motorSpeed = 0.0f;
+	def.maxMotorTorque = 100.0f;
 	new Physics::RevoluteJoint(def);
 	new Physics::RevoluteJoint(def2);
 }
@@ -45,32 +48,31 @@ Player::~Player() {
 }
 
 void Player::update(float deltaTime) {
-	float vel = 30.0f;
+	float vel = 3000.0f;
+	Physics::CircleCollider* wheel = (Physics::CircleCollider*)getCollider(Wheel);
+	Physics::RevoluteJoint* axisJoint = (Physics::RevoluteJoint*)getCollider(Body)->getJoint(0);
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Left)) {
-		float current = getCollider(Wheel)->getAngularVelocity();
-		if(current < 0.0f) getCollider(Wheel)->setAngularVelocity(current*0.01f);
-		if(getCollider(Wheel)->getAngularVelocity() < 20.0f) getCollider(Wheel)->applyTorque(vel);
+		axisJoint->setLimits(-0.3f, 0.3);
+		if(wheel->getAngularVelocity() < 20.0f) wheel->applyTorque(vel*deltaTime);
+		axisJoint->setMotorSpeed(1.0f);
 	}
 	else if(Environment::getKeyboard()->isKeyHeld(Keyboard::Right)) {
-		float current = getCollider(Wheel)->getAngularVelocity();
-		if(current > 0.0f) getCollider(Wheel)->setAngularVelocity(current*0.01f);
-		if(getCollider(Wheel)->getAngularVelocity() > -20.0f) getCollider(Wheel)->applyTorque(-vel);
+		axisJoint->setLimits(-0.3f, 0.3);
+		if(wheel->getAngularVelocity() > -20.0f) wheel->applyTorque(-vel*deltaTime);
+		axisJoint->setMotorSpeed(-1.0f);
 	}
-	else
-		getCollider(Wheel)->setAngularVelocity(getCollider(Wheel)->getAngularVelocity()*0.6f);
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::UP)){
-		if(getCollider(Wheel)->getLinearVelocity().y < 5.0f) getCollider(Wheel)->applyForceToCenterOfMass(vec2f(0.0f,80.0f));
+	else {
+		wheel->setAngularVelocity(wheel->getAngularVelocity()*0.6f);
+		axisJoint->setLimits(axisJoint->getLowerLimit()*0.6, axisJoint->getUpperLimit()*0.6);
 	}
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Down)){
-		if(getCollider(Wheel)->getLinearVelocity().y > -50.0f) getCollider(Wheel)->applyForceToCenterOfMass(vec2f(0.0f,-80.0f));
-	}
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) pos.z -= vel*deltaTime;
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::LShift)) pos.z += vel*deltaTime;
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::R)) getCollider(Wheel)->setRadius(getCollider(Wheel)->getRadius()+0.1f);
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::F)) getCollider(Wheel)->setRadius(getCollider(Wheel)->getRadius()-0.1f);
-	if(Environment::getKeyboard()->isKeyPressed(Keyboard::C)) getCollider(Wheel)->deleteJoint(0);
-	pos.x = getCollider(Wheel)->getPosition().x;
-	pos.y = getCollider(Wheel)->getPosition().y;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::UP))
+		if(wheel->getLinearVelocity().y < 5.0f) wheel->applyForceToCenterOfMass(vec2f(0.0f,80.0f));
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Down))
+		if(wheel->getLinearVelocity().y > -50.0f) wheel->applyForceToCenterOfMass(vec2f(0.0f,-80.0f));
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) pos.z -= 30.0f*deltaTime;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::LShift)) pos.z += 30.0f*deltaTime;
+	pos.x = wheel->getPosition().x;
+	pos.y = wheel->getPosition().y;
 	transform = glm::translate(mat4f(1.0f), pos);
 }
 
