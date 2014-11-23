@@ -4,10 +4,9 @@
 #include "GenericBody.hpp"
 #include "DeferredLight.hpp"
 #include "Player.hpp"
-#include "Level.hpp"
 #include "MyDebugDrawer.hpp"
 
-SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
+SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	this->setName("SCENE");
 
 	loadResources();
@@ -37,10 +36,11 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0), pCount(0) {
 	Player* player = new Player();
 	player->addTo(renderer);
 
-	psys = new Physics::ParticleSystem();
+	Physics::ParticleSystem* psys = new Physics::ParticleSystem();
 	psys->setRadius(0.1f);
 	psys->setGravityScale(1.0f);
 	psys->setStaticPressureIterations(8);
+	psys->setName("psys");
 	psys->addTo(renderer);
 
 	GenericBody* b = new GenericBody();
@@ -138,31 +138,10 @@ void SceneMain::update(float deltaTime) {
 	debugCounter += deltaTime;
 	if (debugCounter > 1) {
 		VBE_LOG("FPS: " << fpsCount);
-		Log::message() << pCount <<  " " << fpsCount << Log::Flush;
+		Physics::ParticleSystem* psys = (Physics::ParticleSystem*)getGame()->getObjectByName("psys");
+		Log::message() << psys->getParticleCount() <<  " " << fpsCount << Log::Flush;
 		debugCounter--;
 		fpsCount = 0;
-	}
-	Camera* cam = (Camera*)getGame()->getObjectByName("playerCam");
-	if(Environment::getMouse()->isButtonPressed(Mouse::Left)) {
-		GenericBody* b = new GenericBody();
-		Physics::CircleCollider* p = new Physics::CircleCollider();
-		p->setDensity(0.2f);
-		p->setRadius(1.0f);
-		p->setDType(Physics::Collider::Dynamic);
-		p->setPosition(vec2f(cam->getWorldPos().x, cam->getWorldPos().y));
-		b->set(p);
-		b->addTo(this);
-	}
-	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) {
-		for(int i = 0; i < 100; ++i) {
-			Physics::ParticleDef pd;
-			pd.flags = Physics::WaterParticle;
-			pd.color = vec4uc(0, 0, 255, 255);
-			pd.position = vec2f(((float(rand()%10000)/10000.0f)*2)*5+cam->getWorldPos().x, ((float(rand()%10000)/10000.0f)*2)*5+cam->getWorldPos().y);
-			pd.lifetime = 1000;
-			psys->createParticle(pd);
-		}
-		pCount += 100;
 	}
 	if(Environment::getKeyboard()->isKeyPressed(Keyboard::M)) wall->removeAndDelete();
 }

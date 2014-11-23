@@ -15,8 +15,6 @@ class SceneMain : public GameObject {
 		float debugCounter;
 		int fpsCount;
 
-		int pCount;
-		Physics::ParticleSystem* psys;
 		GameObject* wall;
 };
 

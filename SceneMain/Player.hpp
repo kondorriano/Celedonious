@@ -13,6 +13,11 @@ class Player : public Physics::Body {
 			Axis = 2
 		};
 
+		enum Direction {
+			Left = 0,
+			Right = 1
+		};
+
 		Player();
 		~Player();
 
@@ -24,6 +29,7 @@ class Player : public Physics::Body {
 		Camera* cam;
 		vec3f pos;
 		DeferredContainer* renderer;
+		Direction dir;
 };
 
 #endif // PLAYER_HPP

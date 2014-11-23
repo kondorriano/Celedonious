@@ -11,8 +11,6 @@ SOURCES += main.cpp \
     SceneMain/physics/Collider.cpp \
     SceneMain/physics/CircleCollider.cpp \
     SceneMain/physics/PolygonCollider.cpp \
-    SceneMain/Level.cpp \
-    SceneMain/TaskPool.cpp \
     SceneMain/GenericBody.cpp \
     Box2D/Collision/Shapes/b2ChainShape.cpp \
     Box2D/Collision/Shapes/b2CircleShape.cpp \
@@ -86,7 +84,6 @@ HEADERS += \
     SceneMain/physics/Collider.hpp \
     SceneMain/physics/CircleCollider.hpp \
     SceneMain/physics/PolygonCollider.hpp \
-    SceneMain/Level.hpp \
     SceneMain/TaskPool.hpp \
     SceneMain/GenericBody.hpp \
     Box2D/Collision/Shapes/b2ChainShape.h \

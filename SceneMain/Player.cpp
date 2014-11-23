@@ -1,7 +1,7 @@
 #include "Player.hpp"
 #include "DeferredContainer.hpp"
 
-Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr) {
+Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
 	model.program = Programs.get("deferredModel");
 	model.mesh = Meshes.get("quad");
@@ -52,11 +52,13 @@ void Player::update(float deltaTime) {
 	Physics::CircleCollider* wheel = (Physics::CircleCollider*)getCollider(Wheel);
 	Physics::RevoluteJoint* axisJoint = (Physics::RevoluteJoint*)getCollider(Body)->getJoint(0);
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Left)) {
+		dir = Left;
 		axisJoint->setLimits(-0.3f, 0.3);
 		if(wheel->getAngularVelocity() < 20.0f) wheel->applyTorque(vel*deltaTime);
 		axisJoint->setMotorSpeed(1.0f);
 	}
 	else if(Environment::getKeyboard()->isKeyHeld(Keyboard::Right)) {
+		dir = Right;
 		axisJoint->setLimits(-0.3f, 0.3);
 		if(wheel->getAngularVelocity() > -20.0f) wheel->applyTorque(-vel*deltaTime);
 		axisJoint->setMotorSpeed(-1.0f);
@@ -71,6 +73,18 @@ void Player::update(float deltaTime) {
 		if(wheel->getLinearVelocity().y > -50.0f) wheel->applyForceToCenterOfMass(vec2f(0.0f,-80.0f));
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::Space)) pos.z -= 30.0f*deltaTime;
 	if(Environment::getKeyboard()->isKeyHeld(Keyboard::LShift)) pos.z += 30.0f*deltaTime;
+	if(Environment::getKeyboard()->isKeyHeld(Keyboard::P)) {
+		vec2f shootPos = getCollider(Body)->getWorldPoint(vec2f(dir==Right?0.6f:-0.6f, 0.0f));
+		Physics::ParticleSystem* psys = (Physics::ParticleSystem*)getGame()->getObjectByName("psys");
+		for(int i = 0; i < 5; ++i) {
+			Physics::ParticleDef pd;
+			pd.flags = Physics::WaterParticle;
+			pd.position = shootPos + vec2f(0.0f,float(rand()%100)/200.0f);
+			pd.velocity = vec2f(dir==Right?100.0f:-100.0f,0.0f);
+			pd.lifetime = 1000;
+			psys->createParticle(pd);
+		}
+	}
 	pos.x = wheel->getPosition().x;
 	pos.y = wheel->getPosition().y;
 	transform = glm::translate(mat4f(1.0f), pos);
