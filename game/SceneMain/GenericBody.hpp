@@ -9,11 +9,11 @@ class GenericBody : public Physics::Body {
 		GenericBody();
 		~GenericBody();
 
-		void update(float deltaTime);
-		void set(Physics::Collider* newCollider);
+		void addCol(Physics::Collider* newCollider);
+		Physics::Collider* getCol(unsigned int index) const;
+		void deleteCol(unsigned int index);
 
-	public:
-		Physics::Collider* col;
+		void update(float deltaTime) override;
 };
 
 #endif // SQUAREOBJECT_HPP

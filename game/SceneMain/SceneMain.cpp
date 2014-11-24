@@ -51,7 +51,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	p->setPosition(vec2f(0.0f, -10.0f));
 	p->setFriction(1.0f);
 	p->setRestitution(0.1f);
-	b->set(p);
+	b->addCol(p);
 	b->addTo(renderer);
 
 	for(int i = 0; i < 10; ++i) {
@@ -60,7 +60,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 		p->setAsBox(10.0f,1.0f);
 		p->setDType(Physics::Collider::Static);
 		p->setPosition(vec2f(5.0f*(i%2?-1:1),10.0f+5.0f*i));
-		b->set(p);
+		b->addCol(p);
 		b->addTo(renderer);
 	}
 
@@ -69,7 +69,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	p->setAsBox(1.0f,100.0f);
 	p->setDType(Physics::Collider::Static);
 	p->setPosition(vec2f(-10.0f,50.0f));
-	b->set(p);
+	b->addCol(p);
 	b->addTo(renderer);
 
 	b = new GenericBody();
@@ -77,7 +77,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	p->setAsBox(1.0f,100.0f);
 	p->setDType(Physics::Collider::Static);
 	p->setPosition(vec2f(10.0f,50.0f));
-	b->set(p);
+	b->addCol(p);
 	b->addTo(renderer);
 
 	wall = b;
