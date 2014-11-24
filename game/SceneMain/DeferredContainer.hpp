@@ -22,9 +22,12 @@ class DeferredContainer : public ContainerObject {
 		Texture2D* getDepth() const;
 
 	private:
+		Texture2D gBufferColor0;
+		Texture2D gBufferColor1;
+		Texture2D gBufferDepth;
 		RenderTarget* gBuffer;
 		mutable DrawMode drawMode;
-		mutable Model quad;
+		MeshBase* quad;
 };
 
 #endif // DEFERREDCONTAINER_HPP

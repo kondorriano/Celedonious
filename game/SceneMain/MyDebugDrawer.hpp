@@ -22,8 +22,8 @@ class MyDebugDrawer : public Physics::DebugDrawer {
 	private:
 		bool drawEnabled;
 		bool gridEnabled;
-		Model circle;
-		Model poly;
+		MeshBase* circle;
+		MeshBase* poly;
 		DeferredContainer* renderer;
 };
 

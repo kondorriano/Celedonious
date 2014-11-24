@@ -1,6 +1,7 @@
 #include "MyDebugDrawer.hpp"
 #include "physics/Engine.hpp"
 #include "DeferredContainer.hpp"
+#include "Manager.hpp"
 
 MyDebugDrawer::MyDebugDrawer() : drawEnabled(true), gridEnabled(true), renderer(nullptr) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
@@ -9,22 +10,20 @@ MyDebugDrawer::MyDebugDrawer() : drawEnabled(true), gridEnabled(true), renderer(
 	Vertex::Format f(e);
 	std::vector<vec2f> coords;
 	for(int i = 0; i < 360; i += 10) {coords.push_back(vec2f(cos(i*DEG_TO_RAD), sin(i*DEG_TO_RAD)));}
-	circle.mesh = Mesh::loadEmpty(f,Mesh::DYNAMIC);
-	circle.mesh->setVertexData(&coords[0], coords.size());
-	circle.program = Programs.get("debug");
-	poly.mesh = Mesh::loadEmpty(f,Mesh::DYNAMIC);
-	poly.program = Programs.get("debug");
+	circle = new Mesh(f,Mesh::DYNAMIC);
+	circle->setVertexData(&coords[0], coords.size());
+	poly = new Mesh(f,Mesh::DYNAMIC);
 }
 
 MyDebugDrawer::~MyDebugDrawer(){
-	delete circle.mesh;
-	delete poly.mesh;
+	delete circle;
+	delete poly;
 }
 
 void MyDebugDrawer::update(float deltaTime) {
 	(void) deltaTime;
-	 if(Environment::getKeyboard()->isKeyPressed(Keyboard::E)) drawEnabled = !drawEnabled;
-	 if(Environment::getKeyboard()->isKeyPressed(Keyboard::R)) gridEnabled = !gridEnabled;
+	 if(Keyboard::justPressed((Keyboard::E))) drawEnabled = !drawEnabled;
+	 if(Keyboard::justPressed((Keyboard::R))) gridEnabled = !gridEnabled;
 }
 
 void MyDebugDrawer::draw() const {
@@ -35,45 +34,45 @@ void MyDebugDrawer::draw() const {
 
 void MyDebugDrawer::drawParticles(vec2f* centers, float radius, vec4uc* colors, int count) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	poly.mesh->setPrimitiveType(Mesh::POINTS);
-	poly.mesh->setVertexData(centers, count);
-	poly.program->uniform("color")->set(vec4f(1.0f));
-	poly.program->uniform("MVP")->set(cam->projection*cam->getView());
-	poly.draw();
+	poly->setPrimitiveType(Mesh::POINTS);
+	poly->setVertexData(centers, count);
+	Programs.get("debug")->uniform("color")->set(vec4f(1.0f));
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView());
+	poly->draw(Programs.get("debug"));
 }
 
 void MyDebugDrawer::drawPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	poly.mesh->setPrimitiveType(Mesh::LINE_LOOP);
-	poly.mesh->setVertexData(vertices, vertexCount);
-	poly.program->uniform("color")->set(color);
-	poly.program->uniform("MVP")->set(cam->projection*cam->getView());
-	poly.draw();
+	poly->setPrimitiveType(Mesh::LINE_LOOP);
+	poly->setVertexData(vertices, vertexCount);
+	Programs.get("debug")->uniform("color")->set(color);
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView());
+	poly->draw(Programs.get("debug"));
 }
 
 void MyDebugDrawer::drawSolidPolygon(const vec2f* vertices, int vertexCount, const vec4f& color) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	poly.mesh->setPrimitiveType(Mesh::TRIANGLE_FAN);
-	poly.mesh->setVertexData(vertices, vertexCount);
-	poly.program->uniform("color")->set(color);
-	poly.program->uniform("MVP")->set(cam->projection*cam->getView());
-	poly.draw();
+	poly->setPrimitiveType(Mesh::TRIANGLE_FAN);
+	poly->setVertexData(vertices, vertexCount);
+	Programs.get("debug")->uniform("color")->set(color);
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView());
+	poly->draw(Programs.get("debug"));
 }
 
 void MyDebugDrawer::drawCircle(const vec2f& center, float radius, const vec4f& color) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	circle.mesh->setPrimitiveType(Mesh::LINE_LOOP);
-	circle.program->uniform("color")->set(color);
-	circle.program->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(glm::translate(mat4f(1.0f), vec3f(center, 0.0f)), vec3f(radius)));
-	circle.draw();
+	circle->setPrimitiveType(Mesh::LINE_LOOP);
+	Programs.get("debug")->uniform("color")->set(color);
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(glm::translate(mat4f(1.0f), vec3f(center, 0.0f)), vec3f(radius)));
+	circle->draw(Programs.get("debug"));
 }
 
 void MyDebugDrawer::drawSolidCircle(const vec2f& center, float radius, const vec2f& axis, const vec4f& color) {
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	circle.mesh->setPrimitiveType(Mesh::TRIANGLE_FAN);
-	circle.program->uniform("color")->set(color);
-	circle.program->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(glm::translate(mat4f(1.0f), vec3f(center, 0.0f)), vec3f(radius)));
-	circle.draw();
+	circle->setPrimitiveType(Mesh::TRIANGLE_FAN);
+	Programs.get("debug")->uniform("color")->set(color);
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(glm::translate(mat4f(1.0f), vec3f(center, 0.0f)), vec3f(radius)));
+	circle->draw(Programs.get("debug"));
 	drawSegment(center,center+radius*axis,color);
 }
 
@@ -82,11 +81,11 @@ void MyDebugDrawer::drawSegment(const vec2f& p1, const vec2f& p2, const vec4f& c
 	v.push_back(p1);
 	v.push_back(p2);
 	Camera* cam = (Camera*)Game::i()->getObjectByName("playerCam");
-	poly.mesh->setPrimitiveType(Mesh::LINES);
-	poly.mesh->setVertexData(&v[0], 2);
-	poly.program->uniform("color")->set(color);
-	poly.program->uniform("MVP")->set(cam->projection*cam->getView());
-	poly.draw();
+	poly->setPrimitiveType(Mesh::LINES);
+	poly->setVertexData(&v[0], 2);
+	Programs.get("debug")->uniform("color")->set(color);
+	Programs.get("debug")->uniform("MVP")->set(cam->projection*cam->getView());
+	poly->draw(Programs.get("debug"));
 }
 
 void MyDebugDrawer::drawTransform(const vec2f& position, const vec2f& xAxis, const vec2f& yAxis) {

@@ -25,7 +25,7 @@ class Player : public Physics::Body {
 		void draw() const;
 
 	private:
-		Model model;
+		MeshBase* model;
 		Camera* cam;
 		vec3f pos;
 		DeferredContainer* renderer;

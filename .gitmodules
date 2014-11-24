@@ -2,3 +2,6 @@
 [submodule "VBE"]
 	path = VBE
 	url = https://github.com/Towerthousand/VBE.git
+[submodule "VBE-Scenegraph"]
+	path = VBE-Scenegraph
+	url = https://github.com/Towerthousand/VBE-Scenegraph.git

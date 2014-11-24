@@ -1,6 +1,7 @@
 #ifndef COMMONS_HPP
 #define COMMONS_HPP
-#include "VBE/includes.hpp"
+#include <VBE/VBE.hpp>
+#include <VBE-Scenegraph/VBE-Scenegraph.hpp>
 #include "Box2D/Box2D.h"
 
 namespace Utils {
