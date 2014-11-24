@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	DistanceJoint::DistanceJoint(const DistanceJointDef& def) {
+	DistanceJoint::DistanceJoint(const DistanceJointDef& def) : Joint(Joint::Distance) {
 		cA = def.colliderA;
 		cB = def.colliderB;
 		cA->joints.push_back(this);
@@ -78,8 +78,7 @@ namespace Physics {
 		colliderB = cB;
 		localAnchorA = cA->getLocalPoint(anchor1);
 		localAnchorB = cB->getLocalPoint(anchor2);
-		vec2f d = anchor2 - anchor1;
-		length = glm::length(d);
+		length = glm::length(anchor2 - anchor1);
 	}
 
 }

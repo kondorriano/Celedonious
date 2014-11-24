@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	struct RevoluteJointDef : public JointDef {
+	struct RevoluteJointDef final : public JointDef {
 			RevoluteJointDef() {
 				colliderA = nullptr;
 				colliderB = nullptr;
@@ -37,17 +37,17 @@ namespace Physics {
 			void init(Collider* cA, Collider* cB, const vec2f& anchor);
 	};
 
-	class RevoluteJoint : public Joint {
+	class RevoluteJoint final : public Joint {
 		public:
 			RevoluteJoint(const RevoluteJointDef& def);
-			~RevoluteJoint();
+			~RevoluteJoint() override;
 
-			vec2f getAnchorA() const;
-			vec2f getAnchorB() const;
+			vec2f getAnchorA() const override;
+			vec2f getAnchorB() const override;
 			vec2f getLocalAnchorA() const;
 			vec2f getLocalAnchorB() const;
-			vec2f getReactionForce(float inverseDelta) const;
-			float getReactionTorque(float inverseDelta) const;
+			vec2f getReactionForce(float inverseDelta) const override;
+			float getReactionTorque(float inverseDelta) const override;
 			float getJointAngle() const;
 			float getJointSpeed() const;
 			float getLowerLimit() const;

@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	struct WeldJointDef : public JointDef {
+	struct WeldJointDef final : public JointDef {
 			WeldJointDef() {
 				localAnchorA = vec2f(0.0f);
 				localAnchorB = vec2f(0.0f);
@@ -25,17 +25,17 @@ namespace Physics {
 			float dampingRatio;
 	};
 
-	class WeldJoint : public Joint {
+	class WeldJoint final : public Joint {
 		public:
 			WeldJoint(const WeldJointDef& def);
-			~WeldJoint();
+			~WeldJoint() override;
 
-			vec2f getAnchorA() const;
-			vec2f getAnchorB() const;
+			vec2f getAnchorA() const override;
+			vec2f getAnchorB() const override;
 			vec2f getLocalAnchorA() const;
 			vec2f getLocalAnchorB() const;
-			vec2f getReactionForce(float inverseDelta) const;
-			float getReactionTorque(float inverseDelta) const;
+			vec2f getReactionForce(float inverseDelta) const override;
+			float getReactionTorque(float inverseDelta) const override;
 			float getFrequency() const;
 			void setFrequency(float newFrequency);
 			float getDampingRatio() const;

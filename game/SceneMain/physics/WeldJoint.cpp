@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	WeldJoint::WeldJoint(const WeldJointDef& def) {
+	WeldJoint::WeldJoint(const WeldJointDef& def) : Joint(Joint::Weld) {
 		cA = def.colliderA;
 		cB = def.colliderB;
 		cA->joints.push_back(this);

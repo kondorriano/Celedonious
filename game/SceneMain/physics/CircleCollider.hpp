@@ -4,10 +4,10 @@
 
 namespace Physics {
 
-	class CircleCollider : public Collider {
+	class CircleCollider final : public Collider {
 		public:
 			CircleCollider();
-			~CircleCollider();
+			~CircleCollider() override;
 	};
 
 }

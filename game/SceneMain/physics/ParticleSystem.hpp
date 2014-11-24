@@ -42,7 +42,7 @@ namespace Physics {
 	class ParticleSystem : public GameObject {
 		public:
 			ParticleSystem();
-			virtual ~ParticleSystem();
+			virtual ~ParticleSystem() override;
 
 			int createParticle(const ParticleDef& def);
 			void destroyParticle(int index) {destroyParticle(index, false);}
@@ -122,8 +122,8 @@ namespace Physics {
 			//		void ComputeAABB(b2AABB* const aabb) const;
 
 		protected:
-			virtual void update(float deltaTime);
-			virtual void draw() const;
+			virtual void update(float deltaTime) override;
+			virtual void draw() const override;
 			virtual void onParticleCollisionEnter(const ParticleContact* contact);
 			virtual void onParticleCollisionExit(int indexA, int indexB);
 			virtual void onBodyCollisionEnter(const ParticleBodyContact* contact);

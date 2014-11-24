@@ -11,13 +11,13 @@ namespace Physics {
 	class Body : public GameObject {
 		public:
 			Body();
-			virtual ~Body();
+			virtual ~Body() override;
 			int getColliderIndex(const Collider* col) const;
 			int getNumColliders() const;
 
 		protected:
-			virtual void update(float deltaTime) {(void) deltaTime;}
-			virtual void draw() const {}
+			virtual void update(float deltaTime) override {(void) deltaTime;}
+			virtual void draw() const override {}
 
 			void addCollider(Collider* newCollider);
 			Collider* getCollider(unsigned int index) const;

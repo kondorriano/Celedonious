@@ -4,10 +4,10 @@
 
 namespace Physics {
 
-	class PolygonCollider : public Collider {
+	class PolygonCollider final : public Collider {
 		public:
 			PolygonCollider();
-			~PolygonCollider();
+			~PolygonCollider() override;
 
 			void set(const vec2f* points, int count);
 			void setAsBox(float hx, float hy);

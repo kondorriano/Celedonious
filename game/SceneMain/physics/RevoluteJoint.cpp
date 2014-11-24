@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	RevoluteJoint::RevoluteJoint(const RevoluteJointDef& def) {
+	RevoluteJoint::RevoluteJoint(const RevoluteJointDef& def) : Joint(Joint::Revolute) {
 		cA = def.colliderA;
 		cB = def.colliderB;
 		cA->joints.push_back(this);

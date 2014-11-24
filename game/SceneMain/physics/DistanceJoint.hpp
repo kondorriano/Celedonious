@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	struct DistanceJointDef : public JointDef {
+	struct DistanceJointDef final : public JointDef {
 			DistanceJointDef() {
 				colliderA = nullptr;
 				colliderB = nullptr;
@@ -25,17 +25,17 @@ namespace Physics {
 			float dampingRatio;
 	};
 
-	class DistanceJoint : public Joint {
+	class DistanceJoint final : public Joint {
 		public:
 			DistanceJoint(const DistanceJointDef& def);
-			~DistanceJoint();
+			~DistanceJoint() override;
 
-			vec2f getAnchorA() const;
-			vec2f getAnchorB() const;
+			vec2f getAnchorA() const override;
+			vec2f getAnchorB() const override;
 			vec2f getLocalAnchorA() const;
 			vec2f getLocalAnchorB() const;
-			vec2f getReactionForce(float inverseDelta) const;
-			float getReactionTorque(float inverseDelta) const;
+			vec2f getReactionForce(float inverseDelta) const override;
+			float getReactionTorque(float inverseDelta) const override;
 			void setFrequency(float newFrequency);
 			float getFrequency() const;
 			void setDampingRatio(float newDampingRatio);

@@ -4,7 +4,7 @@
 
 namespace Physics {
 
-	Joint::Joint() : cA(nullptr), cB(nullptr), joint(nullptr){
+	Joint::Joint(Type type) : cA(nullptr), cB(nullptr), joint(nullptr), type(type) {
 	}
 
 	Joint::~Joint() {

@@ -5,14 +5,14 @@
 
 namespace Physics {
 
-	struct ContactPoint {
+	struct ContactPoint final {
 			vec2f position;
 			float normalImpulse, tangentImpulse, separation;
 	};
 
 	class Collider;
 	class ParticleSystem;
-	class BodyContact {
+	class BodyContact final {
 		public:
 			enum Type {
 				Null = 0,
@@ -44,7 +44,7 @@ namespace Physics {
 			Type type;
 	};
 
-	class ParticleBodyContact {
+	class ParticleBodyContact final {
 		public:
 			enum Type {
 				Null = 0,
@@ -73,7 +73,7 @@ namespace Physics {
 			Type type;
 	};
 
-	class ParticleContact {
+	class ParticleContact final {
 		public:
 			enum Type {
 				Null = 0,

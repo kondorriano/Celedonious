@@ -31,7 +31,7 @@ namespace Physics {
 				Motor = e_motorJoint
 			};
 
-			Joint();
+			Joint(Type type);
 			virtual ~Joint();
 
 			Collider* getColliderA() {return cA;}
@@ -46,7 +46,7 @@ namespace Physics {
 			bool isActive() const;
 			bool getCollideConnected() const;
 
-			//virtual void ShiftOrigin(const vec2f& newOrigin) { (void) newOrigin; }
+			Type getType() const {return type;}
 
 		protected:
 			friend class Collider;
@@ -55,6 +55,9 @@ namespace Physics {
 			Collider* cB;
 
 			b2Joint* joint;
+
+		private:
+			Type type;
 	};
 
 }
