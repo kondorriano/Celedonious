@@ -5,8 +5,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-include(../VBE/VBE.pri)
 include(../VBE-Scenegraph/VBE-Scenegraph.pri)
+include(../VBE/VBE.pri)
 include(../common.pri)
 
 INCLUDEPATH += .
