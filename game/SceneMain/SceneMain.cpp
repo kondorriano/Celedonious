@@ -107,7 +107,7 @@ void SceneMain::loadResources() {
 	quad->setVertexData(&data[0], 6);
 	quad->setPrimitiveType(Mesh::TRIANGLES);
 	Meshes.add("quad", quad);
-	MeshBase* monkey = OBJLoader::loadFromOBJStandard(Storage::openAsset("data/meshes/monkey.obj"), MeshBase::STATIC);
+	MeshBase* monkey = OBJLoader::loadFromOBJStandard(Storage::openAsset("meshes/monkey.obj"), MeshBase::STATIC);
 	Meshes.add("monkey", monkey);
 
 	//textures	//textures
@@ -133,15 +133,15 @@ void SceneMain::loadResources() {
 	Textures2D.add("nullWhite", nullWhite);
 
 	//program
-	Programs.add("deferredLight", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/light.frag")));
-	Programs.add("deferredModel", ShaderProgram::load(Storage::openAsset("data/shaders/standardDeferred.vert"), Storage::openAsset("data/shaders/standardDeferred.frag")));
-	Programs.add("ambientPass", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/ambientPass.frag")));
-	Programs.add("blurPassVertical", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/blurPassVertical.frag")));
-	Programs.add("blurPassHoritzontal", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/blurPassHoritzontal.frag")));
-	Programs.add("textureToScreen", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/quad.frag")));
-	Programs.add("blurMaskPass", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/blurMaskPass.frag")));
-	Programs.add("depthShader", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/depth.frag")));
-	Programs.add("debug", ShaderProgram::load(Storage::openAsset("data/shaders/depth.vert"), Storage::openAsset("data/shaders/debug.frag")));
+	Programs.add("deferredLight", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/light.frag")));
+	Programs.add("deferredModel", ShaderProgram::load(Storage::openAsset("shaders/standardDeferred.vert"), Storage::openAsset("shaders/standardDeferred.frag")));
+	Programs.add("ambientPass", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/ambientPass.frag")));
+	Programs.add("blurPassVertical", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassVertical.frag")));
+	Programs.add("blurPassHoritzontal", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassHoritzontal.frag")));
+	Programs.add("textureToScreen", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/quad.frag")));
+	Programs.add("blurMaskPass", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurMaskPass.frag")));
+	Programs.add("depthShader", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/depth.frag")));
+	Programs.add("debug", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/debug.frag")));
 }
 
 void SceneMain::update(float deltaTime) {
@@ -156,4 +156,5 @@ void SceneMain::update(float deltaTime) {
 		fpsCount = 0;
 	}
 	if(Keyboard::justPressed(Keyboard::M)) wall->removeAndDelete();
+	if(Keyboard::pressed(Keyboard::Escape) || Window::getInstance()->isClosing()) getGame()->isRunning = false;
 }
