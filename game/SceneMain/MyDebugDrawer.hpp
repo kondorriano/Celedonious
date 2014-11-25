@@ -1,6 +1,6 @@
 #ifndef MYDEBUGDRAWER_HPP
 #define MYDEBUGDRAWER_HPP
-#include "physics/DebugDrawer.hpp"
+#include "commons.hpp"
 
 class DeferredContainer;
 class MyDebugDrawer : public Physics::DebugDrawer {

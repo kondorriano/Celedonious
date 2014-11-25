@@ -145,6 +145,7 @@ void SceneMain::loadResources() {
 }
 
 void SceneMain::update(float deltaTime) {
+	float a = Clock::getSeconds();
 	Physics::Engine::update(deltaTime);
 	++fpsCount;
 	debugCounter += deltaTime;
@@ -152,6 +153,7 @@ void SceneMain::update(float deltaTime) {
 		VBE_LOG("FPS: " << fpsCount);
 		Physics::ParticleSystem* psys = (Physics::ParticleSystem*)getGame()->getObjectByName("psys");
 		Log::message() << psys->getParticleCount() <<  " " << fpsCount << Log::Flush;
+		Log::message() << (Clock::getSeconds()-a)*1000 << Log::Flush;
 		debugCounter--;
 		fpsCount = 0;
 	}

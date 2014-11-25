@@ -2,11 +2,6 @@
 #define COMMONS_HPP
 #include <VBE/VBE.hpp>
 #include <VBE-Scenegraph/VBE-Scenegraph.hpp>
-#include "Box2D/Box2D.h"
-
-namespace Utils {
-	inline vec2f B2Dv2ToGLMv2(const b2Vec2& v) {return vec2f(v.x,v.y);}
-	inline b2Vec2 GLMv2ToB2Dv2(const vec2f& v) {return b2Vec2(v.x,v.y);}
-}
+#include <VBE-Physics2D/VBE-Physics2D.hpp>
 
 #endif // COMMONS_HPP

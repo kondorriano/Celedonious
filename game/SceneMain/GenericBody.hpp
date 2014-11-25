@@ -1,7 +1,6 @@
 #ifndef SQUAREOBJECT_HPP
 #define SQUAREOBJECT_HPP
 #include "commons.hpp"
-#include "physics/Physics.hpp"
 
 class DeferredContainer;
 class GenericBody : public Physics::Body {

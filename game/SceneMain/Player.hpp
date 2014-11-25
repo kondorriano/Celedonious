@@ -1,7 +1,6 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include "commons.hpp"
-#include "physics/Physics.hpp"
 
 class DeferredContainer;
 class Player : public Physics::Body {
