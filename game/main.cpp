@@ -2,7 +2,6 @@
 
 int main() {
 	ContextSettings settings;
-	settings.requestSRGB = true;
 	settings.profile = ContextSettings::CoreProfile;
 	settings.versionMajor = 4;
 	settings.versionMinor = 3;
