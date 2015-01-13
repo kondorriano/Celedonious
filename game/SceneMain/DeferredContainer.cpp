@@ -3,17 +3,7 @@
 
 DeferredContainer::DeferredContainer() : gBuffer(nullptr), drawMode(Deferred) {
 	setName("deferred");
-	gBufferDepth = Texture2D(vec2ui(1), TextureFormat::DEPTH_COMPONENT32);
-	gBufferDepth.setFilter(GL_NEAREST, GL_NEAREST);
-	gBufferColor0 = Texture2D(vec2ui(1), TextureFormat::RGB8);
-	gBufferColor0.setFilter(GL_NEAREST, GL_NEAREST);
-	gBufferColor1 = Texture2D(vec2ui(1), TextureFormat::RGBA16F);
-	gBufferColor1.setFilter(GL_NEAREST, GL_NEAREST);
-	gBuffer = new RenderTarget(1.0f);
-	gBuffer->setTexture(RenderTarget::DEPTH, &gBufferDepth); //Z-BUFFER
-	gBuffer->setTexture(RenderTarget::COLOR0, &gBufferColor0); //COLOR
-	gBuffer->setTexture(RenderTarget::COLOR1, &gBufferColor1); //NORMAL, BRIGHTNESS, SPECULAR FACTOR
-
+	makeTarget();
 	quad = &Meshes.get("quad");
 }
 
@@ -22,6 +12,7 @@ DeferredContainer::~DeferredContainer() {
 }
 
 void DeferredContainer::update(float deltaTime) {
+	makeTarget();
 	ContainerObject::update(deltaTime);
 }
 
@@ -78,3 +69,17 @@ Texture2D* DeferredContainer::getDepth() const {
 	return gBuffer->getTexture(RenderTarget::DEPTH);
 }
 
+void DeferredContainer::makeTarget() {
+	if(gBuffer != nullptr && Window::getInstance()->getSize() == gBuffer->getSize()) return;
+	vec2ui size = Window::getInstance()->getSize();
+	gBufferDepth = Texture2D(size, TextureFormat::DEPTH_COMPONENT32);
+	gBufferDepth.setFilter(GL_NEAREST, GL_NEAREST);
+	gBufferColor0 = Texture2D(size, TextureFormat::RGB8);
+	gBufferColor0.setFilter(GL_NEAREST, GL_NEAREST);
+	gBufferColor1 = Texture2D(size, TextureFormat::RGBA16F);
+	gBufferColor1.setFilter(GL_NEAREST, GL_NEAREST);
+	gBuffer = new RenderTarget(size.x, size.y);
+	gBuffer->setTexture(RenderTarget::DEPTH, &gBufferDepth); //Z-BUFFER
+	gBuffer->setTexture(RenderTarget::COLOR0, &gBufferColor0); //COLOR
+	gBuffer->setTexture(RenderTarget::COLOR1, &gBufferColor1); //NORMAL, BRIGHTNESS, SPECULAR FACTOR
+}

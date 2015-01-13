@@ -22,6 +22,8 @@ class DeferredContainer : public ContainerObject {
 		Texture2D* getDepth() const;
 
 	private:
+		void makeTarget();
+
 		Texture2D gBufferColor0;
 		Texture2D gBufferColor1;
 		Texture2D gBufferDepth;
