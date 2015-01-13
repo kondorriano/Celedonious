@@ -4,7 +4,7 @@
 
 Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
-	model = Meshes.get("quad");
+	model = &Meshes.get("quad");
 	cam = new Camera("playerCam",vec3f(0,0,20));
 	cam->projection = glm::perspective(60.0f, float(Window::getInstance()->getSize().x)/float(Window::getInstance()->getSize().y), 0.1f, 10000.0f);
 	cam->addTo(this);
@@ -92,11 +92,11 @@ void Player::update(float deltaTime) {
 
 void Player::draw() const {
 	if(renderer->getMode() != DeferredContainer::Deferred) return;
-	Programs.get("deferredModel")->uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(fullTransform, vec3f(0.1f)));
-	Programs.get("deferredModel")->uniform("M")->set(fullTransform);
-	Programs.get("deferredModel")->uniform("V")->set(cam->getView());
-	Programs.get("deferredModel")->uniform("ambient")->set(0.5f);
-	Programs.get("deferredModel")->uniform("specular")->set(1.0f);
-	Programs.get("deferredModel")->uniform("diffuseTex")->set(Textures2D.get("nullGreen"));
+	Programs.get("deferredModel").uniform("MVP")->set(cam->projection*cam->getView()*glm::scale(fullTransform, vec3f(0.1f)));
+	Programs.get("deferredModel").uniform("M")->set(fullTransform);
+	Programs.get("deferredModel").uniform("V")->set(cam->getView());
+	Programs.get("deferredModel").uniform("ambient")->set(0.5f);
+	Programs.get("deferredModel").uniform("specular")->set(1.0f);
+	Programs.get("deferredModel").uniform("diffuseTex")->set(Textures2D.get("nullGreen"));
 	model->draw(Programs.get("deferredModel"));
 }

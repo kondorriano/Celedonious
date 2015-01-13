@@ -96,52 +96,54 @@ SceneMain::~SceneMain() {
 
 void SceneMain::loadResources() {
 	//meshes
-	std::vector<Vertex::Element> elems = {
-		Vertex::Element(Vertex::Attribute::Position, Vertex::Element::Float, 3)
+	std::vector<Vertex::Attribute> elems = {
+		Vertex::Attribute("a_position", Vertex::Attribute::Float, 3)
 	};
 	std::vector<vec3f> data = {
 		vec3f(1, -1, 0), vec3f(1, 1, 0), vec3f(-1, 1, 0),
-		vec3f(-1, 1, 0), vec3f(-1, -1, 0), vec3f(1, -1, 0)
+		vec3f(-1, -1, 0)
 	};
-	MeshBase* quad = new Mesh(Vertex::Format(elems));
-	quad->setVertexData(&data[0], 6);
-	quad->setPrimitiveType(Mesh::TRIANGLES);
-	Meshes.add("quad", quad);
-	MeshBase* monkey = OBJLoader::loadFromOBJStandard(Storage::openAsset("meshes/monkey.obj"), MeshBase::STATIC);
-	Meshes.add("monkey", monkey);
+	std::vector<unsigned int> indexes = {
+		0, 1, 2, 3, 0, 2
+	};
+	MeshIndexed quad = MeshIndexed(Vertex::Format(elems));
+	quad.setVertexData(&data[0], 6);
+	quad.setIndexData(&indexes[0], 6);
+	quad.setPrimitiveType(Mesh::TRIANGLES);
+	Meshes.add("quad", std::move(quad));
 
-	//textures	//textures
+	//textures
 	char pixels[4] = {char(200), char(20), char(20), char(255)};
-	Texture2D* nullRed = new Texture2D();
-	nullRed->loadFromRaw(pixels, vec2ui(1));
-	Textures2D.add("nullRed", nullRed);
+	Texture2D nullRed(vec2ui(1));
+	nullRed.setData(pixels);
+	Textures2D.add("nullRed", std::move(nullRed));
 	char pixels2[4] = {char(20), char(200), char(20), char(255)};
-	Texture2D* nullGreen = new Texture2D();
-	nullRed->loadFromRaw(pixels2, vec2ui(1));
-	Textures2D.add("nullGreen", nullGreen);
+	Texture2D nullGreen = Texture2D(vec2ui(1));
+	nullRed.setData(pixels2);
+	Textures2D.add("nullGreen", std::move(nullGreen));
 	char pixels3[4] = {char(20), char(20), char(200), char(255)};
-	Texture2D* nullBlue = new Texture2D();
-	nullRed->loadFromRaw(pixels3, vec2ui(1));
-	Textures2D.add("nullBlue", nullBlue);
+	Texture2D nullBlue = Texture2D(vec2ui(1));
+	nullRed.setData(pixels3);
+	Textures2D.add("nullBlue", std::move(nullBlue));
 	char pixels4[4] = {char(70), char(30), char(80), char(255)};
-	Texture2D* nullBlack = new Texture2D();
-	nullRed->loadFromRaw(pixels4, vec2ui(1));
-	Textures2D.add("nullBlack", nullBlack);
+	Texture2D nullBlack = Texture2D(vec2ui(1));
+	nullRed.setData(pixels4);
+	Textures2D.add("nullBlack", std::move(nullBlack));
 	char pixels5[4] = {char(255), char(255), char(255), char(255)};
-	Texture2D* nullWhite = new Texture2D();
-	nullRed->loadFromRaw(pixels5, vec2ui(1));
-	Textures2D.add("nullWhite", nullWhite);
+	Texture2D nullWhite = Texture2D(vec2ui(1));
+	nullRed.setData(pixels5);
+	Textures2D.add("nullWhite", std::move(nullWhite));
 
 	//program
-	Programs.add("deferredLight", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/light.frag")));
-	Programs.add("deferredModel", ShaderProgram::load(Storage::openAsset("shaders/standardDeferred.vert"), Storage::openAsset("shaders/standardDeferred.frag")));
-	Programs.add("ambientPass", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/ambientPass.frag")));
-	Programs.add("blurPassVertical", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassVertical.frag")));
-	Programs.add("blurPassHoritzontal", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassHoritzontal.frag")));
-	Programs.add("textureToScreen", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/quad.frag")));
-	Programs.add("blurMaskPass", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurMaskPass.frag")));
-	Programs.add("depthShader", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/depth.frag")));
-	Programs.add("debug", ShaderProgram::load(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/debug.frag")));
+	Programs.add("deferredLight", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/light.frag")));
+	Programs.add("deferredModel", ShaderProgram(Storage::openAsset("shaders/standardDeferred.vert"), Storage::openAsset("shaders/standardDeferred.frag")));
+	Programs.add("ambientPass", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/ambientPass.frag")));
+	Programs.add("blurPassVertical", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassVertical.frag")));
+	Programs.add("blurPassHoritzontal", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurPassHoritzontal.frag")));
+	Programs.add("textureToScreen", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/quad.frag")));
+	Programs.add("blurMaskPass", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/blurMaskPass.frag")));
+	Programs.add("depthShader", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/depth.frag")));
+	Programs.add("debug", ShaderProgram(Storage::openAsset("shaders/depth.vert"), Storage::openAsset("shaders/debug.frag")));
 }
 
 void SceneMain::update(float deltaTime) {

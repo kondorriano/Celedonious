@@ -3,18 +3,18 @@
 
 DeferredContainer::DeferredContainer() : gBuffer(nullptr), drawMode(Deferred) {
 	setName("deferred");
-	gBufferDepth.loadEmpty(vec2ui(1), TextureFormat::DEPTH_COMPONENT32);
+	gBufferDepth = Texture2D(vec2ui(1), TextureFormat::DEPTH_COMPONENT32);
 	gBufferDepth.setFilter(GL_NEAREST, GL_NEAREST);
-	gBufferColor0.loadEmpty(vec2ui(1), TextureFormat::RGB8);
+	gBufferColor0 = Texture2D(vec2ui(1), TextureFormat::RGB8);
 	gBufferColor0.setFilter(GL_NEAREST, GL_NEAREST);
-	gBufferColor1.loadEmpty(vec2ui(1), TextureFormat::RGBA16F);
+	gBufferColor1 = Texture2D(vec2ui(1), TextureFormat::RGBA16F);
 	gBufferColor1.setFilter(GL_NEAREST, GL_NEAREST);
 	gBuffer = new RenderTarget(1.0f);
 	gBuffer->setTexture(RenderTarget::DEPTH, &gBufferDepth); //Z-BUFFER
 	gBuffer->setTexture(RenderTarget::COLOR0, &gBufferColor0); //COLOR
 	gBuffer->setTexture(RenderTarget::COLOR1, &gBufferColor1); //NORMAL, BRIGHTNESS, SPECULAR FACTOR
 
-	quad = Meshes.get("quad");
+	quad = &Meshes.get("quad");
 }
 
 DeferredContainer::~DeferredContainer() {
@@ -49,11 +49,11 @@ void DeferredContainer::draw() const {
 	ContainerObject::draw();
 
 	//AMBIENT LIGHT
-	Programs.get("ambientPass")->uniform("MVP")->set(mat4f(1.0f));
-	Programs.get("ambientPass")->uniform("color0")->set(getColor0());
-	Programs.get("ambientPass")->uniform("color1")->set(getColor1());
-	Programs.get("ambientPass")->uniform("depth")->set(getDepth());
-	Programs.get("ambientPass")->uniform("invResolution")->set(vec2f(1.0f/Window::getInstance()->getSize().x, 1.0f/Window::getInstance()->getSize().y));
+	Programs.get("ambientPass").uniform("MVP")->set(mat4f(1.0f));
+	Programs.get("ambientPass").uniform("color0")->set(getColor0());
+	Programs.get("ambientPass").uniform("color1")->set(getColor1());
+	Programs.get("ambientPass").uniform("depth")->set(getDepth());
+	Programs.get("ambientPass").uniform("invResolution")->set(vec2f(1.0f/Window::getInstance()->getSize().x, 1.0f/Window::getInstance()->getSize().y));
 	quad->draw(Programs.get("ambientPass"));
 
 	GL_ASSERT(glDepthFunc(GL_LEQUAL));
