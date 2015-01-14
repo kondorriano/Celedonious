@@ -7,7 +7,7 @@ int main() {
 	settings.versionMinor = 3;
 	Game* game = new Game(Window::DisplayMode::createWindowedMode(1000, 1000), settings);
 	Window::getInstance()->setTitle("Celedonious");
-	Mouse::setGrab(true);
+	Mouse::setGrab(false);
 	SceneMain* sc = new SceneMain();
 	sc->addTo(game);
 	game->run();
