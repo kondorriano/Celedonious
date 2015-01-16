@@ -74,6 +74,9 @@ void Player::movement(float deltaTime)
 	Physics::RevoluteJoint* axisJoint = (Physics::RevoluteJoint*)getCollider(Body)->getJoint(0);
 	float vel = 3000.0f;
 	float axisX = Gamepad::axis(0,Gamepad::AxisLeftX);
+	if(Keyboard::pressed(Keyboard::Left)) axisX = -1.0f;
+	if(Keyboard::pressed(Keyboard::Right)) axisX = 1.0f;
+
 	//Movimiento Horizontal
 	//Floor
 	if(colliding) {
@@ -125,7 +128,7 @@ void Player::movement(float deltaTime)
 	bool jumping = false;
 	//Jump
 	boostFrameCoolDown = glm::max(0.0f,boostFrameCoolDown-deltaTime);
-	if(Gamepad::justPressed(0,Gamepad::ButtonA)) {
+	if(Gamepad::justPressed(0,Gamepad::ButtonA) || Keyboard::justPressed(Keyboard::UP)) {
 		if(colliding && boostFrameCoolDown == 0) {
 			if(waterCounter >= jumpImpulseCost) {
 				wheel->applyLinearImpulse(vec2f(0.0f,jumpImpulse),vec2f(0.0f));
@@ -147,7 +150,7 @@ void Player::movement(float deltaTime)
 		}
 	}
 
-	if(Gamepad::pressed(0,Gamepad::ButtonA)) {
+	if(Gamepad::pressed(0,Gamepad::ButtonA)|| Keyboard::pressed(Keyboard::UP)) {
 		if(!colliding) {
 			if(waterCounter != 0) {
 				wheel->applyForceToCenterOfMass(vec2f(0.0f,jumpForce*deltaTime));
@@ -181,6 +184,11 @@ void Player::shoot(float deltaTime)
 {
 	float axisX = Gamepad::axis(0,Gamepad::AxisRightX);
 	float axisY = Gamepad::axis(0,Gamepad::AxisRightY);
+
+	if(Keyboard::pressed(Keyboard::A)) axisX = -1.0f;
+	if(Keyboard::pressed(Keyboard::D)) axisX = 1.0f;
+	if(Keyboard::pressed(Keyboard::W)) axisY = -1.0f;
+	if(Keyboard::pressed(Keyboard::S)) axisY = 1.0f;
 	axisY = -axisY;
 
 	if(!(glm::abs(axisX) > 0.25f || glm::abs(axisY) > 0.25f)) return;
