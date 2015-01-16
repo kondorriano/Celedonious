@@ -8,9 +8,11 @@ class Player : public Physics::Body {
 
 		enum ColliderID {
 			Wheel = 0,
-			Body = 1,
-			Axis = 2,
-			Sensor = 3
+			Head = 1,
+			Body = 2,
+			JetPack = 3,
+			Axis = 4,
+			Sensor = 5,
 		};
 
 		enum Direction {

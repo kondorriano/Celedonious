@@ -15,14 +15,30 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	rueda->setRadius(0.5f);
 	rueda->setRestitution(0.4f);
 	this->addCollider(rueda);
+
+	Physics::PolygonCollider* head = new Physics::PolygonCollider();
+	head->setDType(Physics::Collider::Dynamic);
+	head->setPosition(vec2f(0.0f,2.6f));
+	head->setDensity(0.00001f);
+	head->setAsBox(0.8f,0.3f);
+	this->addCollider(head);
+
 	Physics::PolygonCollider* body = new Physics::PolygonCollider();
 	body->setDType(Physics::Collider::Dynamic);
-	body->setPosition(vec2f(0.0f,1.6f));
+	body->setPosition(vec2f(0.0f,1.5f));
 	body->setDensity(0.1f);
 	body->setFriction(10.0f);
 	body->setRestitution(0.4f);
-	body->setAsBox(0.4f,1.0f);
+	body->setAsBox(0.3f,0.65f);
 	this->addCollider(body);
+
+	Physics::PolygonCollider* jetpack = new Physics::PolygonCollider();
+	jetpack->setDType(Physics::Collider::Dynamic);
+	jetpack->setPosition(vec2f(0.0f,1.6f));
+	jetpack->setDensity(0.00001f);
+	jetpack->setAsBox(0.1f,0.35f);
+	this->addCollider(jetpack);
+
 	Physics::CircleCollider* axis = new Physics::CircleCollider();
 	axis->setDType(Physics::Collider::Dynamic);
 	axis->setPosition(vec2f(0.0f));
@@ -38,12 +54,32 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	sensor->setRadius(0.3f);
 	sensor->setDensity(0.00001f);
 	this->addCollider(sensor);
+
+	Physics::PolygonCollider* eyes = new Physics::PolygonCollider();
+	eyes->setDType(Physics::Collider::Dynamic);
+	eyes->setPosition(vec2f(0.5f,2.6f));
+	eyes->setDensity(0.00001f);
+	eyes->setAsBox(0.2f,0.1f);
+	this->addCollider(eyes);
+
 	Physics::RevoluteJointDef def;
 	Physics::RevoluteJointDef def2;
 	Physics::WeldJointDef def3;
+	Physics::WeldJointDef def4;
+	Physics::WeldJointDef def5;
+	Physics::WeldJointDef def6;
+
+
+
 	def.init(axis, body, vec2f(0.0f));
 	def2.init(rueda, axis, vec2f(0.0f));
 	def3.init(sensor,axis,vec2f(0.0f));
+	def4.init(jetpack,body,vec2f(0.0f));
+	def5.init(head,body,vec2f(0.0f));
+	def6.init(eyes,head,vec2f(0.0f));
+
+
+
 	def.enableLimit = true;
 	def.enableMotor = true;
 	def.lowerAngle = -0.3f;
@@ -53,6 +89,12 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	new Physics::RevoluteJoint(def);
 	new Physics::RevoluteJoint(def2);
 	new Physics::WeldJoint(def3);
+	new Physics::WeldJoint(def4);
+	new Physics::WeldJoint(def5);
+	new Physics::WeldJoint(def6);
+
+
+
 
 }
 
@@ -72,6 +114,10 @@ void Player::movement(float deltaTime)
 {
 	Physics::CircleCollider* wheel = (Physics::CircleCollider*)getCollider(Wheel);
 	Physics::RevoluteJoint* axisJoint = (Physics::RevoluteJoint*)getCollider(Body)->getJoint(0);
+	Physics::PolygonCollider* jetpack = (Physics::PolygonCollider*)getCollider(JetPack);
+	Physics::PolygonCollider* body = (Physics::PolygonCollider*)getCollider(Body);
+
+
 	float vel = 3000.0f;
 	float axisX = Gamepad::axis(0,Gamepad::AxisLeftX);
 	if(Keyboard::pressed(Keyboard::Left)) axisX = -1.0f;
@@ -123,6 +169,18 @@ void Player::movement(float deltaTime)
 		//axisJoint->setLimits(axisJoint->getLowerLimit()*0.95f, axisJoint->getUpperLimit()*0.95f);
 
 	}
+
+	//JetPack Position
+	if(dir == Right) {
+		jetpack->setPosition(vec2f(body->getPosition().x-0.7f,wheel->getPosition().y+1.6f));
+		jetpack->setRotation(body->getRotation()-0.2f);
+
+	} else if(dir == Left) {
+		jetpack->setPosition(vec2f(body->getPosition().x+0.7f,wheel->getPosition().y+1.6f));
+		jetpack->setRotation(body->getRotation()+0.2f);
+
+	}
+
 
 	usingWater = false;
 	bool jumping = false;
