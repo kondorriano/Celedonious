@@ -8,3 +8,6 @@
 [submodule "VBE-Physics2D"]
 	path = VBE-Physics2D
 	url = https://github.com/Towerthousand/VBE-Physics2D.git
+[submodule "VBE-Profiler"]
+	path = VBE-Profiler
+	url = https://github.com/Towerthousand/VBE-Profiler.git

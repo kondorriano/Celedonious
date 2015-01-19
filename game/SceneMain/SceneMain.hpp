@@ -11,8 +11,6 @@ class SceneMain : public GameObject {
 
 	private:
 		void loadResources();
-		float debugCounter;
-		int fpsCount;
 
 		GameObject* wall;
 };

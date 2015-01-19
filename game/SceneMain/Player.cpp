@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "DeferredContainer.hpp"
 #include "Manager.hpp"
+#include "CeledoniousProfiler.hpp"
 
 Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	renderer = (DeferredContainer*) getGame()->getObjectByName("deferred");
@@ -69,16 +70,12 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	Physics::WeldJointDef def5;
 	Physics::WeldJointDef def6;
 
-
-
 	def.init(axis, body, vec2f(0.0f));
 	def2.init(rueda, axis, vec2f(0.0f));
 	def3.init(sensor,axis,vec2f(0.0f));
 	def4.init(jetpack,body,vec2f(0.0f));
 	def5.init(head,body,vec2f(0.0f));
 	def6.init(eyes,head,vec2f(0.0f));
-
-
 
 	def.enableLimit = true;
 	def.enableMotor = true;
@@ -92,10 +89,6 @@ Player::Player() : cam(nullptr), pos(0.0f), renderer(nullptr), dir(Right) {
 	new Physics::WeldJoint(def4);
 	new Physics::WeldJoint(def5);
 	new Physics::WeldJoint(def6);
-
-
-
-
 }
 
 Player::~Player() {
@@ -107,7 +100,9 @@ void Player::update(float deltaTime) {
 	movement(deltaTime);
 	shoot(deltaTime);
 	waterRefill(deltaTime);
-
+	//set profiler vars
+	CeledoniousProfiler::waterCounter = waterCounter;
+	CeledoniousProfiler::playerPos = vec2f(pos.x,pos.y);
 }
 
 void Player::movement(float deltaTime)
@@ -228,10 +223,9 @@ void Player::movement(float deltaTime)
 		vec2f vel = wheel->getLinearVelocity();
 		vel.y -= 9.8f*deltaTime;
 		wheel->setLinearVelocity(vel);
-
 	}
 
-	Log::message() << "water: " << waterCounter << " vel: " << wheel->getLinearVelocity().x<< Log::Flush;
+	//Log::message() << "water: " << waterCounter << " vel: " << wheel->getLinearVelocity().x<< Log::Flush;
 
 	pos.x = wheel->getPosition().x;
 	pos.y = wheel->getPosition().y;
@@ -259,7 +253,6 @@ void Player::shoot(float deltaTime)
 
 	waterCounter = glm::max(waterCounter-deltaTime,0.0f);
 	usingWater = true;
-
 }
 
 void Player::waterRefill(float deltaTime)

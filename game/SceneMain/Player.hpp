@@ -46,8 +46,6 @@ class Player : public Physics::Body {
 		float jumpForce = 400.0f;
 		float jumpForceCost = 5.0f; //5*deltatime
 		float boostFrameCoolDown = 0.0f;
-
-
 		bool colliding = false;
 		float waterRefillVelocity = 7.5f;
 		float waterTime = 10.0f;

@@ -6,15 +6,17 @@
 #include "Player.hpp"
 #include "MyDebugDrawer.hpp"
 #include "Manager.hpp"
+#include "CeledoniousProfiler.hpp"
+#include "CeledoniousSystem.hpp"
 
-SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
+SceneMain::SceneMain() {
 	this->setName("SCENE");
 
 	loadResources();
 	srand(Clock::getSeconds());
 
 	//GL stuff..:
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.02, 0.02, 0.02, 1);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -37,7 +39,7 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	Player* player = new Player();
 	player->addTo(renderer);
 
-	Physics::ParticleSystem* psys = new Physics::ParticleSystem();
+	CeledoniousSystem* psys = new CeledoniousSystem();
 	psys->setRadius(0.1f);
 	psys->setGravityScale(1.0f);
 	psys->setStaticPressureIterations(8);
@@ -85,6 +87,9 @@ SceneMain::SceneMain() : debugCounter(0.0f), fpsCount(0) {
 	DeferredLight* dl = new DeferredLight();
 	dl->pos = vec3f(5.0f,5.0f,5.0f);
 	dl->addTo(renderer);
+
+	CeledoniousProfiler* profiler = new CeledoniousProfiler();
+	profiler->addTo(this);
 }
 
 SceneMain::~SceneMain() {
@@ -147,18 +152,7 @@ void SceneMain::loadResources() {
 }
 
 void SceneMain::update(float deltaTime) {
-	float a = Clock::getSeconds();
 	Physics::Engine::update(deltaTime);
-	++fpsCount;
-	debugCounter += deltaTime;
-	if (debugCounter > 1) {
-		VBE_LOG("FPS: " << fpsCount);
-		Physics::ParticleSystem* psys = (Physics::ParticleSystem*)getGame()->getObjectByName("psys");
-		Log::message() << psys->getParticleCount() <<  " " << fpsCount << Log::Flush;
-		Log::message() << (Clock::getSeconds()-a)*1000 << Log::Flush;
-		debugCounter--;
-		fpsCount = 0;
-	}
-	if(Keyboard::justPressed(Keyboard::M)) wall->removeAndDelete();
+	if(Keyboard::justPressed(Keyboard::M) && wall != nullptr) { wall->removeAndDelete(); wall = nullptr;}
 	if(Keyboard::pressed(Keyboard::Escape) || Window::getInstance()->isClosing()) getGame()->isRunning = false;
 }

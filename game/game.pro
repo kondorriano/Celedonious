@@ -6,6 +6,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 include(../VBE-Physics2D/VBE-Physics2D.pri)
+include(../VBE-Profiler/VBE-Profiler.pri)
 include(../VBE-Scenegraph/VBE-Scenegraph.pri)
 include(../VBE/VBE.pri)
 include(../common.pri)
@@ -22,7 +23,8 @@ SOURCES += main.cpp \
     SceneMain/GenericBody.cpp \
     SceneMain/MyDebugDrawer.cpp \
     SceneMain/Manager.cpp \
-    SceneMain/CeledoniousSystem.cpp
+    SceneMain/CeledoniousSystem.cpp \
+    SceneMain/CeledoniousProfiler.cpp
 
 HEADERS += \
 	commons.hpp \
@@ -34,7 +36,8 @@ HEADERS += \
     SceneMain/GenericBody.hpp \
     SceneMain/MyDebugDrawer.hpp \
     SceneMain/Manager.hpp \
-    SceneMain/CeledoniousSystem.hpp
+    SceneMain/CeledoniousSystem.hpp \
+    SceneMain/CeledoniousProfiler.hpp
 
 OTHER_FILES += \
 	assets/shaders/light.frag \
